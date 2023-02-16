@@ -1,14 +1,21 @@
 package game;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class GameClient {
+
+    ScreenHandler screenHandler = new ScreenHandler();
 
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_RESET = "\u001B[0m";
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        new GameClient();
         Scanner scanMe = new Scanner(System.in);
         boolean startGame = true;
 
@@ -27,6 +34,13 @@ public class GameClient {
             if (sc.equals("1")) {
                 startGame = false;
             }
+        }
+    }
+
+    public class ScreenHandler implements ActionListener {
+
+        public void actionPerformed(ActionEvent event) {
+
         }
     }
 }
