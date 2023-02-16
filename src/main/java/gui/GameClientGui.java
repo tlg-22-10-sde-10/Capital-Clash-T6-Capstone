@@ -4,6 +4,7 @@ import marketreturn.MarketReturnGenerator;
 import players.Computer;
 import players.Player;
 import random.RandomNumberForNews;
+import stock.Stock;
 import storage.StockInventory;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -14,6 +15,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ui.GlobalMethodsAndAttributes.*;
 import static ui.TradingRoomMenuOne.buyStock;
@@ -36,6 +39,8 @@ public class GameClientGui extends JPanel implements ActionListener {
     private JLabel computerAccount;
     private JButton endGame;
 
+    private  DefaultTableModel stockTableModel;
+
 
     // temp
     private Player player;
@@ -52,32 +57,23 @@ public class GameClientGui extends JPanel implements ActionListener {
     }
 
     public GameClientGui() {
-
         // temp
         getPlayers();
 
-
         setPreferredSize(new Dimension(1000, 1000));
 
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.addColumn("Company");
-        tableModel.addColumn("Ticker");
-        tableModel.addColumn("Price");
-        tableModel.addColumn("Sector");
+        stockTableModel = new DefaultTableModel();
+
+        stockTableModel.addColumn("Company");
+        stockTableModel.addColumn("Ticker");
+        stockTableModel.addColumn("Price");
+        stockTableModel.addColumn("Sector");
 
         // place holder add api access later
-        tableModel.addRow(new Object[]{"Apple", "AAPL", 143.7, "Technology"});
-        tableModel.addRow(new Object[]{"Boeing", "BA", 213.03, "Industrials"});
-        tableModel.addRow(new Object[]{"Costco", "COST", 511.14, "ConsumerDefensive"});
-        tableModel.addRow(new Object[]{"Delta Airlines", "DAL", 38.97, "Industrials"});
-        tableModel.addRow(new Object[]{"JP Morgan Chase", "JPM", 139.96, "FinancialServices"});
-        tableModel.addRow(new Object[]{"Meta Platforms", "META", 148.97, "CommunicationServices"});
-        tableModel.addRow(new Object[]{"Nike", "NKE", 127.33, "ConsumerCyclical"});
-        tableModel.addRow(new Object[]{"Pfizer", "PFE", 44.16, "Healthcare"});
-        tableModel.addRow(new Object[]{"Tesla", "TSLA", 173.22, "ConsumerDiscretionary"});
-        tableModel.addRow(new Object[]{"United Health", "UNH", 499.1, "Healthcare"});
+        // need to update prices per day
 
-        table = new JTable(tableModel);
+        initialStockLabels();
+        table = new JTable(stockTableModel);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(300, 200, 400, 200);
@@ -179,7 +175,7 @@ public class GameClientGui extends JPanel implements ActionListener {
 
         double playerStockBalance = player.getBalanceFromHolding(stockInventory);
         String playerStocks = player.getStocks() == null ? "Empty" : player.getStocks().toString();
-        String playerCashBalance = String.format("%.2f", computer.getAccount().getCashBalance());
+        String playerCashBalance = String.format("%.2f", player.getAccount().getCashBalance());
         String playerNetBalance = String.format("%.2f", (playerStockBalance + player.getAccount().getCashBalance()));
 
         String playerToString = "<html>" + player.getName()
@@ -211,6 +207,64 @@ public class GameClientGui extends JPanel implements ActionListener {
 
     }
 
+
+
+    private void initialStockLabels() {
+
+        for (int i = 0; i < stockInventory.getAllStocks().size() ; i++) {
+
+            Stock currentStock = stockInventory.getAllStocks().get(i);
+            String stockName = currentStock.getStockName();
+            String stockTicker = currentStock.getSymbol();
+            Double stockPrice = currentStock.getCurrentPrice();
+            String stockType = String.valueOf(currentStock.getSector());
+
+//            System.out.println(stockName);
+//            System.out.println(stockTicker);
+//            System.out.println(stockPrice);
+//            System.out.println(stockType);
+
+            stockTableModel.addRow(new Object[]{stockName, stockTicker, stockPrice, stockType});
+        }
+
+    }
+
+
+    private void updateStockLabel() {
+
+        for (int i = 0; i < stockInventory.getAllStocks().size() ; i++) {
+
+            System.out.println(i);
+            Stock currentStock = stockInventory.getAllStocks().get(i);
+            List<String> stockHolder = new ArrayList<>();
+            String stockName = currentStock.getStockName();
+            String stockTicker = currentStock.getSymbol();
+            Double stockPrice = currentStock.getCurrentPrice();
+            String stockType = String.valueOf(currentStock.getSector());
+
+            stockHolder.add(stockName);
+            stockHolder.add(stockTicker);
+            stockHolder.add(String.valueOf(stockPrice));
+            stockHolder.add(stockType);
+//            System.out.println(stockName);
+//            System.out.println(stockTicker);
+//            System.out.println(stockPrice);
+//            System.out.println(stockType);
+
+//            stockTableModel.addRow(new Object[]{stockName, stockTicker, stockPrice, stockType});
+
+            for (int j = 0; j < stockHolder.size(); j++) {
+                stockTableModel.setValueAt(stockHolder.get(j), i, j);
+            }
+        }
+        stockTableModel.fireTableDataChanged();
+    }
+
+
+
+
+
+
     @Override
     public void actionPerformed(ActionEvent event) {
 
@@ -221,7 +275,7 @@ public class GameClientGui extends JPanel implements ActionListener {
             System.out.println("Buying Stock!");
 
             try {
-                buyStock(1, player, computer, currentSelectedStockTicker, stockInventory);
+                buyStock(currentTradingDayInt, player, computer, currentSelectedStockTicker, stockInventory);
                 updateAccountLabels();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -262,6 +316,8 @@ public class GameClientGui extends JPanel implements ActionListener {
                 MarketReturnGenerator generator = new MarketReturnGenerator();
                 double mktReturnOfTheDay = generator.nextMarketReturn(newsIndexOfTheDay);
                 updateDashboard(currentTradingDayInt, newsIndexOfTheDay, mktReturnOfTheDay, stockInventory);
+
+                updateStockLabel();
                 updateAccountLabels();
 
             } else {

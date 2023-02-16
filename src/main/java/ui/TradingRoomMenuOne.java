@@ -76,20 +76,11 @@ public class TradingRoomMenuOne {
 
 
 
-    public static void buyStock(int day, Player player1, Computer computer1, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public static void buyStock(int day, Player player, Computer computer, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
-//
-//        playerStockMap = new HashMap<>();
-//        brotherStockMap = new HashMap<>();
-//        playerStocks = new ArrayList<>();
-
-//        public static Map<String, Integer> playerStockMap;
-//        public static Map<String, Integer> brotherStockMap;
-//        public static List<String> playerStocks;
-
-        playerStockMap = player1.getStocks();
-        brotherStockMap = computer1.getStocks();
-        playerStocks = player1.getStockNames();
+        playerStockMap = player.getStocks();
+        brotherStockMap = computer.getStocks();
+        playerStocks = player.getStockNames();
 
 
         while (inventory.findBySymbol(stockSymbol) == null) {
@@ -104,7 +95,7 @@ public class TradingRoomMenuOne {
         Stock playerStock = inventory.findBySymbol(stockSymbol);
         double valueOfStockPurchasedByPlayer = numberOfStockPurchaseByPlayer * playerStock.getCurrentPrice();
 
-        if (valueOfStockPurchasedByPlayer > player1.getAccount().getCashBalance()) {
+        if (valueOfStockPurchasedByPlayer > player.getAccount().getCashBalance()) {
             System.out.println(ANSI_RED+"                          ***Unauthorized Purchased!Not enough balance!***\n"+ANSI_RESET);
         } else {
             if (playerStockMap.containsKey(stockSymbol)) {
@@ -113,9 +104,9 @@ public class TradingRoomMenuOne {
                 playerStockMap.put(playerStock.getSymbol(), numberOfStockPurchaseByPlayer);
             }
             playerStocks.add(playerStock.getSymbol());
-            player1.setStockNames(playerStocks);
-            player1.setStocks(playerStockMap);
-            player1.getAccount().deductBalance(numberOfStockPurchaseByPlayer
+            player.setStockNames(playerStocks);
+            player.setStocks(playerStockMap);
+            player.getAccount().deductBalance(numberOfStockPurchaseByPlayer
                     * playerStock.getCurrentPrice());
 
             System.out.println(ANSI_GREEN+"                          ***Successfully Purchased "+numberOfStockPurchaseByPlayer
@@ -133,8 +124,8 @@ public class TradingRoomMenuOne {
             brotherStockMap.put(brotherStock.getSymbol(), numberOfStockPurchasedByBrother);
         }
 
-        computer1.setStocks(brotherStockMap);
-        computer1.getAccount().deductBalance(numberOfStockPurchasedByBrother * brotherStock.getCurrentPrice());
+        computer.setStocks(brotherStockMap);
+        computer.getAccount().deductBalance(numberOfStockPurchasedByBrother * brotherStock.getCurrentPrice());
     }
 
 
