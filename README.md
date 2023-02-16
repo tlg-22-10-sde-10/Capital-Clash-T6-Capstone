@@ -23,9 +23,9 @@ stock market games begin!
 
 
 ## Team members
-- Rupesh Ghimire [LinkedIn](https://www.linkedin.com/in/rupeshghimirey/)
-- Shuofei Wu [LinkedIn](https://www.linkedin.com/in/seth-w-7409a9180/)
-- Tyreik Williams [LinkedIn](https://www.linkedin.com/in/ty%E2%80%99reik-williams-b0563a1a4/)
+- Brandon Yrigan
+- Joe Gonzalez
+- Juan Cruz
 
 ## User Stories
 - As a player, I should be able to choose ten stocks to invest.
