@@ -127,6 +127,18 @@ public class GlobalMethodsAndAttributes {
         }
     }
 
+
+    public static void updateDashboard(int day, int newsIndexOfTheDay, double mktReturnOfTheDay, StockInventory inventory) {
+        if (day != 0) {
+            for (Stock stock : inventory.getAllStocks()) {
+                //stock
+                double nextPrice = stock.UpdateStockPriceForTheDay(stock.getCurrentPrice(),
+                        mktReturnOfTheDay, newsIndexOfTheDay);
+                stock.setCurrentPrice(nextPrice);
+            }
+        }
+    }
+
     public static void showStockInventory(int day) {
         ui.titleBarForInventory(day);
         for (Stock stock : inventory.getAllStocks()) {

@@ -3,6 +3,8 @@ package players;
 import account.Account;
 import storage.StockInventory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,8 @@ public class Computer {
     public Computer(String name, Account account) {
         this.name = name;
         this.account = account;
+        this.stocks = new HashMap<>();
+        this.stockNames = new ArrayList<>();
     }
 
     public String getName() {

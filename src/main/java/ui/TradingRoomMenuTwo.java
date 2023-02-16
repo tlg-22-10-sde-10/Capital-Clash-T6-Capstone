@@ -1,4 +1,8 @@
 package ui;
+import players.Computer;
+import players.Player;
+import storage.StockInventory;
+
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +68,64 @@ public class TradingRoomMenuTwo {
                     +" shares of "+ inventory.findBySymbol(stockSymbol).getStockName()+  "***"+           ANSI_RESET);
 
         }
+
+
+
+
+    }
+
+
+
+
+    public static void sellStock(Player player1, Computer computer1, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+
+
+        playerStockMap = player1.getStocks();
+        brotherStockMap = computer1.getStocks();
+        playerStocks = player1.getStockNames();
+
+
+        if (playerStockMap.isEmpty()) {
+            System.out.println(ANSI_RED+"                          ***No Current Holdings. Transactions cannot be completed***\n"+ANSI_RESET);
+        } else {
+            ArrayList<String> playersStocksLists = new ArrayList<String>(playerStockMap.keySet());
+            showHoldings(playersStocksLists);
+            while (!playerStockMap.containsKey(stockSymbol)) {
+                System.out.println(ANSI_RED+"                          ***This stock is not in your holdings***"+ANSI_RESET);
+                System.out.println(ANSI_RED+"                          ***Please try again and select from your holdings.***\n"+ANSI_RESET);
+                return;
+            }
+
+            String quantityInput = "1";
+            // edge cases player cannot enter more than what they have
+
+            boolean menuOpen = true;
+            while (menuOpen) {
+
+                int quantity = Integer.parseInt(quantityInput);
+
+                if (playerStockMap.get(stockSymbol) >= quantity) {
+                    player1.getAccount().calculateBalance(quantity *
+                            inventory.findBySymbol(stockSymbol).getCurrentPrice());
+                    // update map once the sell is completed
+                    playerStockMap.put(stockSymbol, playerStockMap.get(stockSymbol) - quantity);
+                    if (playerStockMap.get(stockSymbol) == 0) {
+                        playerStockMap.remove(stockSymbol);
+                    }
+                    // plays sound after sell transactions
+                    GlobalMethodsAndAttributes.playAudio("sell.wav");
+                    menuOpen = false;
+                } else {
+                    System.out.println(ANSI_RED+"                          ***Please try again and enter the valid stock quantity.***\n"+ANSI_RESET);
+
+                }
+
+            }
+            System.out.println(ANSI_GREEN+"                          ***Successfully Sold "+quantityInput
+                    +" shares of "+ inventory.findBySymbol(stockSymbol).getStockName()+  "***"+           ANSI_RESET);
+
+        }
+
     }
 
 }

@@ -1,7 +1,16 @@
 package ui;
+import players.Computer;
+import players.Player;
 import stock.Stock;
+import storage.StockInventory;
+
 import javax.sound.sampled.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static ui.GlobalMethodsAndAttributes.*;
 
 public class TradingRoomMenuOne {
@@ -63,6 +72,71 @@ public class TradingRoomMenuOne {
         brother.setStocks(brotherStockMap);
         brother.getAccount().deductBalance(numberOfStockPurchasedByBrother * brotherStock.getCurrentPrice());
     }
+
+
+
+
+    public static void buyStock(int day, Player player1, Computer computer1, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+
+//
+//        playerStockMap = new HashMap<>();
+//        brotherStockMap = new HashMap<>();
+//        playerStocks = new ArrayList<>();
+
+//        public static Map<String, Integer> playerStockMap;
+//        public static Map<String, Integer> brotherStockMap;
+//        public static List<String> playerStocks;
+
+        playerStockMap = player1.getStocks();
+        brotherStockMap = computer1.getStocks();
+        playerStocks = player1.getStockNames();
+
+
+        while (inventory.findBySymbol(stockSymbol) == null) {
+            System.out.println(ANSI_RED+"                       ***Stock not offered. Please select from the list below***\n"+ANSI_RESET);
+            showTradingRoomStockDashboard(day);
+            System.out.println("\nPlease enter the symbol of the stock that you want to purchase:");
+        }
+
+        String quantityInput = "1";
+        int numberOfStockPurchaseByPlayer = Integer.parseInt(quantityInput);
+
+        Stock playerStock = inventory.findBySymbol(stockSymbol);
+        double valueOfStockPurchasedByPlayer = numberOfStockPurchaseByPlayer * playerStock.getCurrentPrice();
+
+        if (valueOfStockPurchasedByPlayer > player1.getAccount().getCashBalance()) {
+            System.out.println(ANSI_RED+"                          ***Unauthorized Purchased!Not enough balance!***\n"+ANSI_RESET);
+        } else {
+            if (playerStockMap.containsKey(stockSymbol)) {
+                playerStockMap.put(playerStock.getSymbol(), playerStockMap.get(stockSymbol) + numberOfStockPurchaseByPlayer);
+            } else {
+                playerStockMap.put(playerStock.getSymbol(), numberOfStockPurchaseByPlayer);
+            }
+            playerStocks.add(playerStock.getSymbol());
+            player1.setStockNames(playerStocks);
+            player1.setStocks(playerStockMap);
+            player1.getAccount().deductBalance(numberOfStockPurchaseByPlayer
+                    * playerStock.getCurrentPrice());
+
+            System.out.println(ANSI_GREEN+"                          ***Successfully Purchased "+numberOfStockPurchaseByPlayer
+                    +" shares of "+ inventory.findBySymbol(stockSymbol).getStockName()+  "***\n"+           ANSI_RESET);
+
+            GlobalMethodsAndAttributes.playAudio("cashier.wav.wav");
+
+        }
+        // brother randomly purchase the stock
+        int numberOfStockPurchasedByBrother = 1 + (int) (Math.random() * 6);
+        Stock brotherStock = inventory.getRandomStock();
+        if(brotherStockMap.containsKey(brotherStock.getSymbol())) {
+            brotherStockMap.put(brotherStock.getSymbol(), numberOfStockPurchasedByBrother+brotherStockMap.get(brotherStock.getSymbol()));
+        } else {
+            brotherStockMap.put(brotherStock.getSymbol(), numberOfStockPurchasedByBrother);
+        }
+
+        computer1.setStocks(brotherStockMap);
+        computer1.getAccount().deductBalance(numberOfStockPurchasedByBrother * brotherStock.getCurrentPrice());
+    }
+
 
     private static void showTradingRoomStockDashboard(int day) {
         ui.titleBarForInventory(day);
