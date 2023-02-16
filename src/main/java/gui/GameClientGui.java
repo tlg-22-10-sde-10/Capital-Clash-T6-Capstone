@@ -270,6 +270,14 @@ public class GameClientGui extends JPanel implements ActionListener {
             }
             currentDay.setText("Day #" + currentTradingDayInt);
 
+        }  else if (command.equals("end")) {
+
+            try {
+                Frame.getScreen(new LoserPanel());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }
