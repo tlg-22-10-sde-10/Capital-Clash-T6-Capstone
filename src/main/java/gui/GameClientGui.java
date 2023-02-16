@@ -1,3 +1,5 @@
+package gui;
+
 import marketreturn.MarketReturnGenerator;
 import players.Computer;
 import players.Player;

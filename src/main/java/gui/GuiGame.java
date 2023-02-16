@@ -1,3 +1,5 @@
+package gui;
+
 import account.Account;
 import players.Computer;
 import players.Player;
