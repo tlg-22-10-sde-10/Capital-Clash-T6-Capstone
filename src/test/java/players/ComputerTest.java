@@ -1,9 +1,9 @@
 package players;
 
-import account.Account;
-import org.junit.Before;
+import com.game.account.Account;
+import com.game.players.Player;
 import org.junit.jupiter.api.Test;
-import storage.StockInventory;
+import com.game.storage.StockInventory;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
