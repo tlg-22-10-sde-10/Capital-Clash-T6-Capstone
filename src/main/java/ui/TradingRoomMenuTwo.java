@@ -77,12 +77,12 @@ public class TradingRoomMenuTwo {
 
 
 
-    public static void sellStock(Player player1, Computer computer1, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public static void sellStock(Player player, Computer computer, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
 
-        playerStockMap = player1.getStocks();
-        brotherStockMap = computer1.getStocks();
-        playerStocks = player1.getStockNames();
+        playerStockMap = player.getStocks();
+        brotherStockMap = computer.getStocks();
+        playerStocks = player.getStockNames();
 
 
         if (playerStockMap.isEmpty()) {
@@ -105,7 +105,7 @@ public class TradingRoomMenuTwo {
                 int quantity = Integer.parseInt(quantityInput);
 
                 if (playerStockMap.get(stockSymbol) >= quantity) {
-                    player1.getAccount().calculateBalance(quantity *
+                    player.getAccount().calculateBalance(quantity *
                             inventory.findBySymbol(stockSymbol).getCurrentPrice());
                     // update map once the sell is completed
                     playerStockMap.put(stockSymbol, playerStockMap.get(stockSymbol) - quantity);

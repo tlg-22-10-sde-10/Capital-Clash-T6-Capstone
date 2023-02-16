@@ -145,6 +145,15 @@ public class GlobalMethodsAndAttributes {
             System.out.println(stock.toString());
         }
     }
+
+
+    public static void showStockInventory(int day,StockInventory inventory) {
+        ui.titleBarForInventory(day);
+        for (Stock stock : inventory.getAllStocks()) {
+            System.out.println(stock.toString());
+        }
+    }
+
     public static void playAudio(String audioFile) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(ClassLoader.getSystemResourceAsStream(audioFile)))) {
             Clip clip = AudioSystem.getClip();

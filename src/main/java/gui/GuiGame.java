@@ -19,7 +19,7 @@ public class GuiGame {
     public GuiGame() {
 
         this.player =  new Player("Player", new Account("checking"));
-        this.computer = new Player("Brother", new Account("checking"));
+        this.computer = new Player("Computer", new Account("checking"));
         try {
             this.stockInventory = new StockInventory();
         } catch (FileNotFoundException e) {
