@@ -220,6 +220,24 @@ public class GameClientGui extends JPanel implements ActionListener {
         }
     }
 
+    private void winOrLose() throws IOException {
+
+        LoserPanel loserPanel = new LoserPanel();
+        WinnerPanel winnerPanel = new WinnerPanel();
+        TiePanel tiePanel = new TiePanel();
+        double playerStockBalance = player.getBalanceFromHolding(stockInventory);
+        double computerStockBalance = computer.getBalanceFromHolding(stockInventory);
+        if (playerStockBalance + player.getAccount().getCashBalance() < computerStockBalance + computer.getAccount().getCashBalance()) {
+             Frame.getScreen(loserPanel);
+        } else if (playerStockBalance + player.getAccount().getCashBalance() > computerStockBalance + computer.getAccount().getCashBalance()) {
+             Frame.getScreen(winnerPanel);
+        } else {
+            Frame.getScreen(tiePanel);
+        }
+
+    }
+
+
     @Override
     public void actionPerformed(ActionEvent event) {
 
@@ -274,7 +292,8 @@ public class GameClientGui extends JPanel implements ActionListener {
         } else if (command.equals("end")) {
 
             try {
-                Frame.getScreen(new LoserPanel());
+//                Frame.getScreen(new LoserPanel());
+                  winOrLose();
             } catch (IOException e) {
                 e.printStackTrace();
             }
