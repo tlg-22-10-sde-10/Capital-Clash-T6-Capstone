@@ -55,6 +55,9 @@ public class GuiGame {
         this.stockInventory = stockInventory;
     }
 
+    public void reset(){
+        single_instance = null;
+    }
 
     public static GuiGame getInstance()
     {
