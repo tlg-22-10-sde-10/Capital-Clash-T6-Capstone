@@ -111,6 +111,7 @@ public class LoserPanel extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("yes")) {
             try {
                 TimeUnit.SECONDS.sleep(1);
+                GuiGame.getInstance().reset();
                 Frame.getScreen(introPanel);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();

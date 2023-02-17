@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.game.ui.TradingRoomMenuOne.buyStock;
@@ -39,7 +40,7 @@ public class GameClientGui extends JPanel implements ActionListener {
     private JLabel computerAccount;
     private JButton endGame;
 
-    private  DefaultTableModel stockTableModel;
+    private DefaultTableModel stockTableModel;
 
 
     // temp
@@ -72,7 +73,7 @@ public class GameClientGui extends JPanel implements ActionListener {
         // place holder add api access later
         // need to update prices per day
 
-        initialStockLabels();
+        setTableStockLabels();
         table = new JTable(stockTableModel);
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -173,97 +174,51 @@ public class GameClientGui extends JPanel implements ActionListener {
     private void updateAccountLabels() {
 
 
-        double playerStockBalance = player.getBalanceFromHolding(stockInventory);
-        String playerStocks = player.getStocks() == null ? "Empty" : player.getStocks().toString();
-        String playerCashBalance = String.format("%.2f", player.getAccount().getCashBalance());
-        String playerNetBalance = String.format("%.2f", (playerStockBalance + player.getAccount().getCashBalance()));
+        List<Computer> accounts = new ArrayList<>(Arrays.asList(player, computer));
+        List<JLabel> accLabels = new ArrayList<>(Arrays.asList(playerAccount, computerAccount));
 
-        String playerToString = "<html>" + player.getName()
-                + "<br/>" + "\n Cash Balance: " + playerCashBalance
-                + "<br/>" + "\n Stocks: " + playerStocks
-                + "<br/>" + "\n Stock Balance: " + player.getBalanceFromHolding(stockInventory)
-                + "<br/>" + "\n Net Balance: " + playerNetBalance + "</html>";
+        for (int i = 0; i < accounts.size(); i++) {
+            double accStockBalance = accounts.get(i).getBalanceFromHolding(stockInventory);
+            String accStocks = accounts.get(i).getStocks() == null ? "Empty" : accounts.get(i).getStocks().toString();
+            String accCashBalance = String.format("%.2f", accounts.get(i).getAccount().getCashBalance());
+            String accStockBalanceFormat = String.format("%.2f",accounts.get(i).getBalanceFromHolding(stockInventory));
+            String accNetBalance = String.format("%.2f", (accStockBalance + accounts.get(i).getAccount().getCashBalance()));
 
-
-        System.out.println(playerToString);
-        playerAccount.setText(playerToString);
-
-
-        // Computer account
-
-        double computerStockBalance = computer.getBalanceFromHolding(stockInventory);
-        String computerStocks = computer.getStocks() == null ? "Empty" : computer.getStocks().toString();
-        String computerCashBalance = String.format("%.2f", computer.getAccount().getCashBalance());
-        String computerNetBalance = String.format("%.2f", (computerStockBalance + computer.getAccount().getCashBalance()));
-
-        String computerToString = "<html>" + computer.getName()
-                + "<br/>" + "\n Cash Balance: " + computerCashBalance
-                + "<br/>" + "\n Stocks: " + computerStocks
-                + "<br/>" + "\n Stock Balance: " + computer.getBalanceFromHolding(stockInventory)
-                + "<br/>" + "\n Net Balance: " + computerNetBalance + "</html>";
-
-        computerAccount.setText(computerToString);
+            String accToString = "<html>" + accounts.get(i).getName()
+                    + "<br/>" + "\n Cash Balance: " + accCashBalance
+                    + "<br/>" + "\n Stocks: " + accStocks
+                    + "<br/>" + "\n Stock Balance: " + accStockBalanceFormat
+                    + "<br/>" + "\n Net Balance: " + accNetBalance + "</html>";
 
 
-    }
-
-
-
-    private void initialStockLabels() {
-
-        for (int i = 0; i < stockInventory.getAllStocks().size() ; i++) {
-
-            Stock currentStock = stockInventory.getAllStocks().get(i);
-            String stockName = currentStock.getStockName();
-            String stockTicker = currentStock.getSymbol();
-            Double stockPrice = currentStock.getCurrentPrice();
-            String stockType = String.valueOf(currentStock.getSector());
-
-//            System.out.println(stockName);
-//            System.out.println(stockTicker);
-//            System.out.println(stockPrice);
-//            System.out.println(stockType);
-
-            stockTableModel.addRow(new Object[]{stockName, stockTicker, stockPrice, stockType});
+            System.out.println(accToString);
+            accLabels.get(i).setText(accToString);
         }
-
     }
 
+    private void setTableStockLabels() {
 
-    private void updateStockLabel() {
+        int numRows = stockTableModel.getRowCount();
 
-        for (int i = 0; i < stockInventory.getAllStocks().size() ; i++) {
+        for (int i = 0; i < stockInventory.getAllStocks().size(); i++) {
 
-            System.out.println(i);
             Stock currentStock = stockInventory.getAllStocks().get(i);
-            List<String> stockHolder = new ArrayList<>();
             String stockName = currentStock.getStockName();
             String stockTicker = currentStock.getSymbol();
             Double stockPrice = currentStock.getCurrentPrice();
             String stockType = String.valueOf(currentStock.getSector());
+            List<String> stockHolder =
+                    new ArrayList<>(Arrays.asList(stockName, stockTicker, String.valueOf(stockPrice), stockType));
 
-            stockHolder.add(stockName);
-            stockHolder.add(stockTicker);
-            stockHolder.add(String.valueOf(stockPrice));
-            stockHolder.add(stockType);
-//            System.out.println(stockName);
-//            System.out.println(stockTicker);
-//            System.out.println(stockPrice);
-//            System.out.println(stockType);
-
-//            stockTableModel.addRow(new Object[]{stockName, stockTicker, stockPrice, stockType});
-
-            for (int j = 0; j < stockHolder.size(); j++) {
-                stockTableModel.setValueAt(stockHolder.get(j), i, j);
+            if (numRows < 2) {
+                stockTableModel.addRow(new Object[]{stockName, stockTicker, stockPrice, stockType});
+            } else {
+                for (int j = 0; j < stockHolder.size(); j++) {
+                    stockTableModel.setValueAt(stockHolder.get(j), i, j);
+                }
             }
         }
-        stockTableModel.fireTableDataChanged();
     }
-
-
-
-
-
 
     @Override
     public void actionPerformed(ActionEvent event) {
@@ -273,16 +228,11 @@ public class GameClientGui extends JPanel implements ActionListener {
 
         if (command.equals("buy")) {
             System.out.println("Buying Stock!");
-
             try {
                 buyStock(currentTradingDayInt, player, computer, currentSelectedStockTicker, stockInventory);
                 updateAccountLabels();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (UnsupportedAudioFileException e) {
-                throw new RuntimeException(e);
-            } catch (LineUnavailableException e) {
-                throw new RuntimeException(e);
+            } catch (Exception error) {
+                System.out.println("An error occurred: " + error);
             }
 
             System.out.println(player.getStockNames());
@@ -294,12 +244,8 @@ public class GameClientGui extends JPanel implements ActionListener {
             try {
                 TradingRoomMenuTwo.sellStock(player, computer, currentSelectedStockTicker, stockInventory);
                 updateAccountLabels();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (UnsupportedAudioFileException e) {
-                throw new RuntimeException(e);
-            } catch (LineUnavailableException e) {
-                throw new RuntimeException(e);
+            } catch (Exception error) {
+                System.out.println("An error occurred: " + error);
             }
 
             System.out.println(player.getStockNames());
@@ -324,17 +270,15 @@ public class GameClientGui extends JPanel implements ActionListener {
                 currentDayButton.setEnabled(false);
             }
             currentDay.setText("Day #" + currentTradingDayInt);
-            updateStockLabel();
-        }  else if (command.equals("end")) {
+            setTableStockLabels();
+        } else if (command.equals("end")) {
 
             try {
                 Frame.getScreen(new LoserPanel());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 }
 
