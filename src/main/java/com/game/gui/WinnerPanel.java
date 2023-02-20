@@ -4,6 +4,7 @@ import com.game.players.Computer;
 import com.game.players.Player;
 import com.game.storage.StockInventory;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +13,7 @@ import java.io.IOException;
 import java.util.MissingFormatArgumentException;
 import java.util.concurrent.TimeUnit;
 
-public class LoserPanel extends JPanel implements ActionListener {
+public class WinnerPanel extends JPanel implements ActionListener {
 
     IntroPanel introPanel = new IntroPanel();
     Font startBtnFont = new Font("Times New Roman", Font.PLAIN, 30);
@@ -24,7 +25,7 @@ public class LoserPanel extends JPanel implements ActionListener {
     private Computer computer;
     StockInventory stockInventory;
 
-    public LoserPanel() throws IOException, MissingFormatArgumentException {
+    public WinnerPanel() throws IOException, MissingFormatArgumentException {
 
         GuiGame test = GuiGame.getInstance();
 
@@ -37,16 +38,16 @@ public class LoserPanel extends JPanel implements ActionListener {
         setBackground(Color.decode(Global.BG_COLOR));
 
         IconBuilder icon = new IconBuilder();
-        ImageIcon titleIcon = icon.imageIcon("/loser.png", Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT, Image.SCALE_DEFAULT);
+        ImageIcon titleIcon = icon.imageIcon("/Winner.png", Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT, Image.SCALE_DEFAULT);
 
         JLabel imageLabel = new JLabel(titleIcon);
         imageLabel.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
 
         double playerStockBalance = player.getBalanceFromHolding(stockInventory);
-        String yourB = String.format("%.2f", (playerStockBalance + player.getAccount().getCashBalance()));
+        String yourB = (String.format("%.2f", playerStockBalance + player.getAccount().getCashBalance()));
         JTextArea yourBalance = new JTextArea(yourB);
 //        yourBalance.setFont(new Font("Arial "))
-        yourBalance.setBounds(580, 358, 200, 25);
+        yourBalance.setBounds(600, 287, 200, 25);
         yourBalance.setBackground(Color.black);
         yourBalance.setForeground(Color.white);
         yourBalance.setFont(sorryYouLoseTextArea2Font);
@@ -56,13 +57,13 @@ public class LoserPanel extends JPanel implements ActionListener {
         double computerStockBalance = computer.getBalanceFromHolding(stockInventory);
         String brotherB = (String.format("%.2f", computerStockBalance + computer.getAccount().getCashBalance()));
         JTextArea brotherBalance = new JTextArea(brotherB);
-        brotherBalance.setBounds(795, 390, 200, 25);
+        brotherBalance.setBounds(765, 317, 200, 25);
         brotherBalance.setBackground(Color.black);
         brotherBalance.setForeground(Color.white);
         brotherBalance.setFont(sorryYouLoseTextArea2Font);
         brotherBalance.setLineWrap(true);
         add(brotherBalance);
-
+        
 
         exitBtn = new JButton("YES");
         exitBtn.setOpaque(true);
@@ -95,7 +96,6 @@ public class LoserPanel extends JPanel implements ActionListener {
 //        Computer player = null;
 //        System.out.println(String.format("%.2f", player.getAccount().getCashBalance()));
 
-        add(imageLabel);
     }
 
     @Override
