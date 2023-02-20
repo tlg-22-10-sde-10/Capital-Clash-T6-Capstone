@@ -249,7 +249,6 @@ public class GameClientGui extends JPanel implements ActionListener {
             if (numRows < 2) {
                 stockTableModel.addRow(new Object[]{stockName, stockTicker, stockPrice, stockType});
             } else {
-//                comparePreviousStocks(i);
                 for (int j = 0; j < stockHolder.size(); j++) {
                     stockTableModel.setValueAt(stockHolder.get(j), i, j);
                 }
@@ -341,9 +340,7 @@ public class GameClientGui extends JPanel implements ActionListener {
             currentDay.setText("Day #" + currentTradingDayInt);
             setTableStockLabels();
         } else if (command.equals("end")) {
-
             try {
-//                Frame.getScreen(new LoserPanel());
                   winOrLose();
             } catch (IOException e) {
                 e.printStackTrace();
