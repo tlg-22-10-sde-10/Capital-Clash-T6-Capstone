@@ -9,10 +9,10 @@ import com.game.players.Player;
 import com.game.random.RandomNumberForNews;
 import com.game.stock.Stock;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,12 +42,13 @@ public class GameClientGui extends JPanel implements ActionListener {
 
     private DefaultTableModel stockTableModel;
 
-
+    DefaultTableCellRenderer cellRenderer;
     // temp
     private Player player;
     private Computer computer;
     private StockInventory stockInventory;
-
+    private List<Double> previousStockInventory;
+    private List<Double> currentStockInventory;
 
     public void getPlayers() {
         GuiGame test = GuiGame.getInstance();
@@ -64,23 +65,25 @@ public class GameClientGui extends JPanel implements ActionListener {
         setPreferredSize(new Dimension(1000, 1000));
 
         stockTableModel = new DefaultTableModel();
+        cellRenderer = new DefaultTableCellRenderer();
 
         stockTableModel.addColumn("Company");
         stockTableModel.addColumn("Ticker");
         stockTableModel.addColumn("Price");
         stockTableModel.addColumn("Sector");
 
-        // place holder add api access later
+        // placeholder add api access later
         // need to update prices per day
 
         setTableStockLabels();
-        table = new JTable(stockTableModel);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        // table = new JTable(stockTableModel);
+        // JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = (JScrollPane) createAlternating(stockTableModel);
+
         scrollPane.setBounds(300, 200, 400, 200);
 
-
-        //Table Event Listner to show what stock is currently listed
+        //Table Event Listener to show what stock is currently listed
         table.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting()) {
                 int selectedRow = table.getSelectedRow();
@@ -91,7 +94,6 @@ public class GameClientGui extends JPanel implements ActionListener {
                 currentSelectedStockTicker = (String) selectedValue;
             }
         });
-
 
         // play again button
         buyBtn = new JButton("Buy Stock");
@@ -153,7 +155,6 @@ public class GameClientGui extends JPanel implements ActionListener {
         // updates both player and computer
         updateAccountLabels();
 
-
         add(scrollPane);
         add(buyBtn);
         add(sellBtn);
@@ -171,9 +172,44 @@ public class GameClientGui extends JPanel implements ActionListener {
 
     }
 
+
+    private JComponent createAlternating(DefaultTableModel model) {
+        table = new JTable(model) {
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+
+                c.setBackground(Color.DARK_GRAY);
+
+                if (!isRowSelected(row) && previousStockInventory != null) {
+                    boolean changeColor = comparePreviousStocks(row);
+                    c.setForeground(changeColor ? Color.GREEN : Color.RED);
+                }else{
+                    c.setForeground(Color.CYAN);
+                }
+
+                return c;
+            }
+        };
+
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.changeSelection(0, 0, false, false);
+        return new JScrollPane(table);
+
+    }
+
+
+    private boolean comparePreviousStocks(int row) {
+
+        Double prevPrice = previousStockInventory.get(row);
+        Double currPrice = currentStockInventory.get(row);
+
+//        System.out.println("prev ->" + prevPrice + " | " + currPrice + "<- curr");
+
+        return currPrice > prevPrice;
+    }
+
+
     private void updateAccountLabels() {
-
-
         List<Computer> accounts = new ArrayList<>(Arrays.asList(player, computer));
         List<JLabel> accLabels = new ArrayList<>(Arrays.asList(playerAccount, computerAccount));
 
@@ -181,7 +217,7 @@ public class GameClientGui extends JPanel implements ActionListener {
             double accStockBalance = accounts.get(i).getBalanceFromHolding(stockInventory);
             String accStocks = accounts.get(i).getStocks() == null ? "Empty" : accounts.get(i).getStocks().toString();
             String accCashBalance = String.format("%.2f", accounts.get(i).getAccount().getCashBalance());
-            String accStockBalanceFormat = String.format("%.2f",accounts.get(i).getBalanceFromHolding(stockInventory));
+            String accStockBalanceFormat = String.format("%.2f", accounts.get(i).getBalanceFromHolding(stockInventory));
             String accNetBalance = String.format("%.2f", (accStockBalance + accounts.get(i).getAccount().getCashBalance()));
 
             String accToString = "<html>" + accounts.get(i).getName()
@@ -270,10 +306,18 @@ public class GameClientGui extends JPanel implements ActionListener {
 
         } else if (command.equals("increaseDay")) {
 
+            previousStockInventory = new ArrayList<>();
+            currentStockInventory = new ArrayList<>();
+
+            for (int i = 0; i < stockInventory.getAllStocks().size(); i++) {
+                Double price = stockInventory.getAllStocks().get(i).getCurrentPrice();
+                previousStockInventory.add(price);
+            }
+
             if (currentTradingDayInt < 4) {
                 currentTradingDayInt += 1;
 
-                System.out.println("update!");
+                System.out.println("Updating day...");
 
                 int newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
                 String todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
@@ -287,12 +331,16 @@ public class GameClientGui extends JPanel implements ActionListener {
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
             }
+
+            for (int i = 0; i < stockInventory.getAllStocks().size(); i++) {
+                Double price = stockInventory.getAllStocks().get(i).getCurrentPrice();
+                currentStockInventory.add(price);
+            }
+
             currentDay.setText("Day #" + currentTradingDayInt);
             setTableStockLabels();
         } else if (command.equals("end")) {
-
             try {
-//                Frame.getScreen(new LoserPanel());
                   winOrLose();
             } catch (IOException e) {
                 e.printStackTrace();
