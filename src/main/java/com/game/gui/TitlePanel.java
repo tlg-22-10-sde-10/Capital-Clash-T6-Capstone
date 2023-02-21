@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class TitlePanel extends JPanel implements ActionListener {
+    private static final int BOLD = 20;
     IntroPanel introPanel = new IntroPanel();
     Font btnFont = new Font("Bebas Neue", Font.BOLD, 20);
 
@@ -51,5 +52,4 @@ public class TitlePanel extends JPanel implements ActionListener {
             }
         }
 
-    }
-}
+    }}
