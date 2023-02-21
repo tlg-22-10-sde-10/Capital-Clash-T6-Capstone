@@ -1,6 +1,7 @@
 package com.game.gui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -13,16 +14,25 @@ public class Frame implements ActionListener {
         try {
             titlePanel = new TitlePanel();
         } catch (IOException e) {
-            e.printStackTrace();
+            // throw runtime exception
+            throw new RuntimeException(e);
+            //e.printStackTrace();
         }
     }
 
     public Frame() {
+        Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = new Dimension ( Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
         frame = new JFrame("Capital Clash");
         frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(titlePanel);
         frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
         frame.pack();
+
+        frame.setBounds ( ss.width / 2 - frameSize.width / 2,
+                ss.height / 2 - frameSize.height / 2,
+                frameSize.width, frameSize.height );
         frame.setVisible(true);
 
     }

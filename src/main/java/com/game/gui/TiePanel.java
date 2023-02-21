@@ -86,9 +86,10 @@ public class TiePanel extends JPanel implements ActionListener {
 
 
         setVisible(true);
-        add(imageLabel);
         add(exitBtn);
         add(exitBtn2);
+        add(imageLabel);
+
 
         Computer computer;
 //        System.out.println(String.format("%.2f", computer.getAccount().getCashBalance()));
