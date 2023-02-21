@@ -2,13 +2,13 @@ package com.game.gui;
 
 import com.game.marketreturn.MarketReturnGenerator;
 import com.game.players.Computer;
+import com.game.stock.StockApi;
 import com.game.storage.StockInventory;
 import com.game.ui.GlobalMethodsAndAttributes;
 import com.game.ui.TradingRoomMenuTwo;
 import com.game.players.Player;
 import com.game.random.RandomNumberForNews;
 import com.game.stock.Stock;
-import org.jetbrains.annotations.NotNull;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -25,6 +25,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,6 +67,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private int currentTradingDayInt = 0;
     private String currentSelectedStockTicker;
 
+
+
+    private JLabel timeLabel;
+
     private JLabel playerAccount;
     private JLabel computerAccount;
     private JButton endGame;
@@ -77,6 +84,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private StockInventory stockInventory;
     private List<Double> previousStockInventory;
     private List<Double> currentStockInventory;
+    private Font digital7 = null;
 
     Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
     Font insiderFont = new Font("Bebas Neue", Font.BOLD, 20);
@@ -130,6 +138,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         this.player = test.getPlayer();
         this.computer = test.getComputer();
         this.stockInventory = test.getStockInventory();
+        try {
+            InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
+            digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(digital7);
+            System.out.println("created font");
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public GameClientGui() {
@@ -238,6 +256,20 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         currentDay.setBounds(305, 25, 400, 200);
         currentDay.setForeground(Color.WHITE);
 
+
+        // clock label
+        timeLabel = new JLabel();
+        timeLabel.setFont(digital7.deriveFont(Font.PLAIN, 48));
+
+        timeLabel.setOpaque(true);
+        timeLabel.setBackground(Color.BLACK);
+
+        timeLabel.setBounds(400, 5, 170, 45);
+        timeLabel.setForeground(Color.GREEN);
+        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timeLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+
         // current day button
         currentDayButton = new JButton("End Trading Day");
         currentDayButton.setActionCommand("increaseDay");
@@ -254,7 +286,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         playerAccount = new JLabel("", SwingConstants.CENTER);
         playerAccount.setBounds(50, 150, 180, 300);
         playerAccount.setVisible(true);
-        //playerAccount.setVerticalAlignment(SwingConstants.CENTER);
 
         // needed for background color
         playerAccount.setOpaque(true);
@@ -325,6 +356,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         warning.setText("\nIf you successfully pull off insider trading there is a guaranteed 1% gain.\nHowever there is a 25% chance for the computer to gain 2%\nand a 25% chance to get caught and lose it all..");
         warning.setEditable(false);
         warning.setBackground(Color.decode(Global.BG_COLOR));
+        warning.setForeground(Color.white);
         warning.setFont(insiderFont);
         insiderDialog = new JDialog(null, "Insider Trading", Dialog.ModalityType.DOCUMENT_MODAL);
         insiderDialog.setBounds(ss.width / 2 - frameSize.width / 4, ss.height / 2 - frameSize.height / 6, 525, 175);
@@ -374,6 +406,38 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         return new JScrollPane(table);
 
     }
+
+
+    private void startClock() {
+        Thread clockThread = new Thread() {
+            public void run() {
+                LocalTime time = LocalTime.of(9, 30);
+                boolean startClock = true;
+
+                while (startClock) {
+                    time = time.plusMinutes(1);
+
+                    timeLabel.setText(DateTimeFormatter.ofPattern("hh:mm a").format(time));
+
+                    if (time.getHour() == 16) {
+//                        System.out.println("It is 4 PM now.");
+                        currentDayButton.setEnabled(true);
+
+                        startClock = false;
+                    } else {
+//                        System.out.println("It is not 4 PM yet.");
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        clockThread.start();
+    }
+
 
 
     private boolean comparePreviousStocks(int row) {
@@ -508,7 +572,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 previousStockInventory.add(price);
             }
 
-            if (currentTradingDayInt < 4) {
+            if (currentTradingDayInt < 12) {
                 currentTradingDayInt += 1;
 
                 System.out.println("Updating day...");
@@ -524,6 +588,9 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             } else {
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
+
+                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt+1, 0, 0.0, stockInventory);
+
             }
 
             for (int i = 0; i < stockInventory.getAllStocks().size(); i++) {
@@ -533,6 +600,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
             currentDay.setText("Day #" + currentTradingDayInt);
             setTableStockLabels();
+//            startClock();
         } else if (command.equals("end")) {
             try {
                   winOrLose();

@@ -1,14 +1,20 @@
 package com.game.gui;
 
+import com.game.stock.StockApi;
+import yahoofinance.Stock;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class Frame implements ActionListener {
     private static JFrame frame;
     private static TitlePanel titlePanel;
+
 
     static {
         try {
@@ -34,7 +40,7 @@ public class Frame implements ActionListener {
                 ss.height / 2 - frameSize.height / 2,
                 frameSize.width, frameSize.height );
         frame.setVisible(true);
-
+        StockApi.getInstance();
     }
 
     public static void getScreen(JPanel panel){
