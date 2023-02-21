@@ -75,50 +75,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private List<Double> currentStockInventory;
     private Font digital7 = null;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Font btnFont = new Font("Bebas Neue", Font.BOLD, 40);
 
 //    private static final int DIALOG = 5;
