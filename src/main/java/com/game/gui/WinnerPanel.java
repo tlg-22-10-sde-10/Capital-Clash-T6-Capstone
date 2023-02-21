@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.MissingFormatArgumentException;
 import java.util.concurrent.TimeUnit;
 
+import static com.game.gui.GameClientGui.*;
+
 public class WinnerPanel extends JPanel implements ActionListener {
 
     IntroPanel introPanel = new IntroPanel();
