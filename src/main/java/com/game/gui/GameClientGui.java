@@ -9,6 +9,8 @@ import com.game.players.Player;
 import com.game.random.RandomNumberForNews;
 import com.game.stock.Stock;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.event.ChangeEvent;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import static com.game.ui.TradingRoomMenuOne.buyStock;
 
@@ -64,6 +67,47 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private List<Double> currentStockInventory;
 
     Font btnFont = new Font("Bebas Neue", Font.BOLD, 40);
+
+//    private static final int DIALOG = 5;
+    int x = -7000;
+    int y = 100;
+    int a = -7000;
+    int b = 200;
+
+
+    public void paint(Graphics g) {
+
+        super.paint(g);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(Color.green);
+        g2d.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+
+
+        g2d.drawString("Apple | AAPL | 143.72 | 1.72 | -0.0031 | 0.0 | Technology " +
+                " Boeing | BA | 213.03 | 0.95 | 0.0043 | 0.0 | Industrials" +
+                " Costco | COST | 511.14 | 1.16 | -0.0013 | 0.0 | ConsumerDefensive " +
+                " Delta Airlines | DAL | 38.97 | 1.17 | 0.004 | 0.0 | Industrials " +
+                " JP Morgan Chase | JPM | 139.96 | 0.88  0.0008 | 0.0 | FinancialServices " +
+                " Meta Platforms | META | 148.97 | -0.18 | 0.0036 | 0.0 | CommunicationServices " +
+                " Nike | NKE | 127.33 | -0.32 | 0.0063 | 0.0 | ConsumerCyclical " +
+                " Pfizer | PFE | 44.16 | 0.6 | -0.0012 | 0.0 | Healthcare " +
+                " Tesla | TSLA | 173.22 | 1.77 | -0.0056 | 0.0 | ConsumerDiscretionary " +
+                " United Health | UNH | 499.19 | 0.43 | -0.0021 | 0.0 | Healthcare ", x, y);
+
+        try {
+            Thread.sleep(100);
+            x += 20;
+
+            if (x > getWidth()) {
+                x = -7000;
+            }
+            repaint();
+
+        } catch (InterruptedException e) {
+            JOptionPane.showMessageDialog(this, e);
+
+        }
+    }
 
 
     public void getPlayers() {
@@ -143,7 +187,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         selectedStockLabel = new JLabel("Selected Stock:");
         selectedStockLabel.setFont(btnFont);
         scrollPane.setColumnHeaderView(selectedStockLabel);
-        selectedStockLabel.setBounds(435, 25, 400, 200);
+        selectedStockLabel.setBounds(450, 25, 400, 200);
 
 
         // current day label
