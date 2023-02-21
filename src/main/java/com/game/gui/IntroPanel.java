@@ -54,8 +54,8 @@ public class IntroPanel extends JPanel implements ActionListener {
                 TimeUnit.SECONDS.sleep(1);
 //                Frame.getScreen(gamePanel);
                 Frame.getScreen(new GameClientGui());
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+            } catch (Exception error) {
+                System.out.println("An error occurred: " + error);
             }
         }
 
