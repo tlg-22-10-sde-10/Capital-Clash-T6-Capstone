@@ -86,11 +86,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private List<Double> currentStockInventory;
     private Font digital7 = null;
 
-    Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
-    Font insiderFont = new Font("Bebas Neue", Font.BOLD, 20);
-    Font btnFont = new Font("Bebas Neue", Font.BOLD, 20);
+//    Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
+//    Font insiderFont = new Font("Bebas Neue", Font.BOLD, 20);
+//    Font btnFont = new Font("Bebas Neue", Font.BOLD, 15);
+    Font btnFont = new Font("Arial", Font.BOLD, 15);
+    Font insiderFont = new Font("Arial", Font.BOLD, 15);
+    Font gameFont = new Font("Arial", Font.BOLD, 30);
 
-//    private static final int DIALOG = 5;
+
+
+    //    private static final int DIALOG = 5;
     int x = -7000;
     int y = 50;
     int a = -7000;
@@ -158,6 +163,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         this.player = test.getPlayer();
         this.computer = test.getComputer();
         this.stockInventory = test.getStockInventory();
+
         try {
             InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
             digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
