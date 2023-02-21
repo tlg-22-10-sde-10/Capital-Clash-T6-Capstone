@@ -84,7 +84,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
 //    private static final int DIALOG = 5;
     int x = -7000;
-    int y = 100;
+    int y = 50;
     int a = -7000;
     int b = 200;
 
@@ -168,6 +168,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 System.out.println("Selected: " + selectedValue);
                 selectedStockLabel.setText("Selected Stock: " + selectedValue);
                 selectedStockLabel.setFont(gameFont);
+                selectedStockLabel.setForeground(Color.WHITE);
                 currentSelectedStockTicker = (String) selectedValue;
                 buyBtn.setEnabled(true);
                 sellBtn.setEnabled(true);
@@ -228,12 +229,14 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         selectedStockLabel.setFont(gameFont);
         scrollPane.setColumnHeaderView(selectedStockLabel);
         selectedStockLabel.setBounds(450, 25, 400, 200);
+        selectedStockLabel.setForeground(Color.WHITE);
 
 
         // current day label
         currentDay = new JLabel("Day #" + currentTradingDayInt);
         currentDay.setFont(gameFont);
         currentDay.setBounds(305, 25, 400, 200);
+        currentDay.setForeground(Color.WHITE);
 
         // current day button
         currentDayButton = new JButton("End Trading Day");
