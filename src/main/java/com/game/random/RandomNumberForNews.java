@@ -23,4 +23,9 @@ public class RandomNumberForNews {
 
         return number;
     }
+
+    public static int getInsiderChance() {
+        int number = RANDOM.nextInt(5);
+        return number;
+    }
 }

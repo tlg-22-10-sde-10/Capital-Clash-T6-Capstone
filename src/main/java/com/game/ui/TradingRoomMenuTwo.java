@@ -95,7 +95,6 @@ public class TradingRoomMenuTwo {
 
                 showMessageDialog(null, "***This stock is not in your holdings***");
                 System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***This stock is not in your holdings***"+ GlobalMethodsAndAttributes.ANSI_RESET);
-                //System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***Please try again and select from your holdings.***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
                 return;
             }
 
