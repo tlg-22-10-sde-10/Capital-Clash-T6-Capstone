@@ -91,7 +91,7 @@ public class GlobalMethodsAndAttributes {
                 ui.showLoseBanner();
                 System.out.println("Your total balance is $"+ ANSI_RED + df.format(totalPlayerBalance) + ANSI_RESET + ".");
                 System.out.println("Your Brother's total balance is $"+ ANSI_GREEN + df.format(totalBrotherBalance) + ANSI_RESET + ".");
-                GlobalMethodsAndAttributes.playAudio("sadTrombone(1).wav");
+                GlobalMethodsAndAttributes.playAudio("sadTrombone.wav");
 
             } else {
                 ui.showTieGameBanner();
