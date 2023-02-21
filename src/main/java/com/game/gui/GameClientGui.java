@@ -119,7 +119,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioInput);
                 clip.start();
-                clip.start();
             }
             else{
                 System.out.println("Couldn't find Music file");
@@ -129,6 +128,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             ex.printStackTrace();
         }
     }
+
 
     public void getPlayers() {
         GuiGame test = GuiGame.getInstance();
