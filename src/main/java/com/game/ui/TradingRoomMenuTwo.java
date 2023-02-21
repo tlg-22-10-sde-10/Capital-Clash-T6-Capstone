@@ -7,6 +7,8 @@ import javax.sound.sampled.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class TradingRoomMenuTwo {
     public static void menuTwoSell() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
@@ -75,7 +77,7 @@ public class TradingRoomMenuTwo {
 
 
 
-    public static void sellStock(Player player, Computer computer, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public static void sellStock(Player player, Computer computer, String stockSymbol, StockInventory inventory, int quantity) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
 
         GlobalMethodsAndAttributes.playerStockMap = player.getStocks();
@@ -84,46 +86,42 @@ public class TradingRoomMenuTwo {
 
 
         if (GlobalMethodsAndAttributes.playerStockMap.isEmpty()) {
+            showMessageDialog(null, "***No Current Holdings. Transactions cannot be completed***");
             System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***No Current Holdings. Transactions cannot be completed***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
         } else {
             ArrayList<String> playersStocksLists = new ArrayList<String>(GlobalMethodsAndAttributes.playerStockMap.keySet());
             GlobalMethodsAndAttributes.showHoldings(playersStocksLists);
-            while (!GlobalMethodsAndAttributes.playerStockMap.containsKey(stockSymbol)) {
+            if (!GlobalMethodsAndAttributes.playerStockMap.containsKey(stockSymbol)) {
+
+                showMessageDialog(null, "***This stock is not in your holdings***");
                 System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***This stock is not in your holdings***"+ GlobalMethodsAndAttributes.ANSI_RESET);
-                System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***Please try again and select from your holdings.***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
                 return;
             }
 
-            String quantityInput = "1";
             // edge cases player cannot enter more than what they have
-
-            boolean menuOpen = true;
-            while (menuOpen) {
-
-                int quantity = Integer.parseInt(quantityInput);
-
-                if (GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) >= quantity) {
-                    player.getAccount().calculateBalance(quantity *
-                            inventory.findBySymbol(stockSymbol).getCurrentPrice());
-                    // update map once the sell is completed
-                    GlobalMethodsAndAttributes.playerStockMap.put(stockSymbol, GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) - quantity);
-                    if (GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) == 0) {
-                        GlobalMethodsAndAttributes.playerStockMap.remove(stockSymbol);
-                    }
-                    // plays sound after sell transactions
-                    GlobalMethodsAndAttributes.playAudio("sell.wav");
-                    menuOpen = false;
-                } else {
-                    System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***Please try again and enter the valid stock quantity.***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
-
+            if (GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) >= quantity) {
+                player.getAccount().calculateBalance(quantity *
+                        inventory.findBySymbol(stockSymbol).getCurrentPrice());
+                // update map once the sell is completed
+                GlobalMethodsAndAttributes.playerStockMap.put(stockSymbol, GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) - quantity);
+                if (GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) == 0) {
+                    GlobalMethodsAndAttributes.playerStockMap.remove(stockSymbol);
                 }
+                // plays sound after sell transactions
+                GlobalMethodsAndAttributes.playAudio("sell.wav");
+                showMessageDialog(null, "Successfully sold " + quantity + " share(s) of " + inventory.findBySymbol(stockSymbol).getStockName());
 
+            } else {
+                showMessageDialog(null, "***Please try again and enter the valid stock quantity.***");
+                System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***Please try again and enter the valid stock quantity.***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
+                return;
             }
-            System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"                          ***Successfully Sold "+quantityInput
+
+
+            System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"                          ***Successfully Sold "+quantity
                     +" shares of "+ inventory.findBySymbol(stockSymbol).getStockName()+  "***"+           GlobalMethodsAndAttributes.ANSI_RESET);
 
         }
-
     }
 
 }

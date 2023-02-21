@@ -7,6 +7,8 @@ import com.game.stock.Stock;
 import javax.sound.sampled.*;
 import java.io.IOException;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class TradingRoomMenuOne {
 
     public static void menuOneBuy(int day) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
@@ -51,7 +53,7 @@ public class TradingRoomMenuOne {
             System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"                          ***Successfully Purchased "+numberOfStockPurchaseByPlayer
                     +" shares of "+ GlobalMethodsAndAttributes.inventory.findBySymbol(stockSymbol).getStockName()+  "***\n"+           GlobalMethodsAndAttributes.ANSI_RESET);
 
-            GlobalMethodsAndAttributes.playAudio("cashier.wav.wav");
+            GlobalMethodsAndAttributes.playAudio("cashier.wav");
 
         }
         // brother randomly purchase the stock
@@ -70,7 +72,7 @@ public class TradingRoomMenuOne {
 
 
 
-    public static void buyStock(int day, Player player, Computer computer, String stockSymbol, StockInventory inventory) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public static void buyStock(int day, Player player, Computer computer, String stockSymbol, StockInventory inventory, int quantityInput) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
         GlobalMethodsAndAttributes.playerStockMap = player.getStocks();
         GlobalMethodsAndAttributes.brotherStockMap = computer.getStocks();
@@ -83,14 +85,14 @@ public class TradingRoomMenuOne {
             System.out.println("\nPlease enter the symbol of the stock that you want to purchase:");
         }
 
-        String quantityInput = "1";
-        int numberOfStockPurchaseByPlayer = Integer.parseInt(quantityInput);
+        int numberOfStockPurchaseByPlayer = quantityInput;
 
         Stock playerStock = inventory.findBySymbol(stockSymbol);
         double valueOfStockPurchasedByPlayer = numberOfStockPurchaseByPlayer * playerStock.getCurrentPrice();
 
         if (valueOfStockPurchasedByPlayer > player.getAccount().getCashBalance()) {
-            System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"                          ***Unauthorized Purchased!Not enough balance!***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
+            showMessageDialog(null, "***Unauthorized Purchased! Not enough balance!***");
+            System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"***Unauthorized Purchased!Not enough balance!***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
         } else {
             if (GlobalMethodsAndAttributes.playerStockMap.containsKey(stockSymbol)) {
                 GlobalMethodsAndAttributes.playerStockMap.put(playerStock.getSymbol(), GlobalMethodsAndAttributes.playerStockMap.get(stockSymbol) + numberOfStockPurchaseByPlayer);
@@ -103,24 +105,35 @@ public class TradingRoomMenuOne {
             player.getAccount().deductBalance(numberOfStockPurchaseByPlayer
                     * playerStock.getCurrentPrice());
 
-            System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"                          ***Successfully Purchased "+numberOfStockPurchaseByPlayer
+            System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"***Successfully Purchased "+numberOfStockPurchaseByPlayer
                     +" shares of "+ inventory.findBySymbol(stockSymbol).getStockName()+  "***\n"+           GlobalMethodsAndAttributes.ANSI_RESET);
 
-            GlobalMethodsAndAttributes.playAudio("cashier.wav.wav");
+            GlobalMethodsAndAttributes.playAudio("cashier.wav");
+            showMessageDialog(null, "Successfully purchased " + numberOfStockPurchaseByPlayer + " share(s) of " + inventory.findBySymbol(stockSymbol).getStockName());
 
         }
         // brother randomly purchase the stock
-        int numberOfStockPurchasedByBrother = 1 + (int) (Math.random() * 6);
-        Stock brotherStock = inventory.getRandomStock();
-        if(GlobalMethodsAndAttributes.brotherStockMap.containsKey(brotherStock.getSymbol())) {
-            GlobalMethodsAndAttributes.brotherStockMap.put(brotherStock.getSymbol(), numberOfStockPurchasedByBrother+ GlobalMethodsAndAttributes.brotherStockMap.get(brotherStock.getSymbol()));
-        } else {
-            GlobalMethodsAndAttributes.brotherStockMap.put(brotherStock.getSymbol(), numberOfStockPurchasedByBrother);
-        }
+        int numberOfStockPurchasedByComputer = 1 + (int) (Math.random() * 6);
+        Stock computerStock = inventory.getRandomStock();
 
-        computer.setStocks(GlobalMethodsAndAttributes.brotherStockMap);
-        computer.getAccount().deductBalance(numberOfStockPurchasedByBrother * brotherStock.getCurrentPrice());
+        double valueOfStockPurchasedByComputer = numberOfStockPurchasedByComputer * computerStock.getCurrentPrice();
+
+        if (valueOfStockPurchasedByComputer > computer.getAccount().getCashBalance()) {
+            System.out.println(GlobalMethodsAndAttributes.ANSI_RED+"***Unauthorized Purchased!Not enough balance!***\n"+ GlobalMethodsAndAttributes.ANSI_RESET);
+        }else {
+
+            if (GlobalMethodsAndAttributes.brotherStockMap.containsKey(computerStock.getSymbol())) {
+                GlobalMethodsAndAttributes.brotherStockMap.put(computerStock.getSymbol(), numberOfStockPurchasedByComputer + GlobalMethodsAndAttributes.brotherStockMap.get(computerStock.getSymbol()));
+            } else {
+                GlobalMethodsAndAttributes.brotherStockMap.put(computerStock.getSymbol(), numberOfStockPurchasedByComputer);
+            }
+
+            computer.setStocks(GlobalMethodsAndAttributes.brotherStockMap);
+            computer.getAccount().deductBalance(numberOfStockPurchasedByComputer * computerStock.getCurrentPrice());
+        }
     }
+
+
 
 
     private static void showTradingRoomStockDashboard(int day) {

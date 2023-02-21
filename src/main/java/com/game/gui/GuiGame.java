@@ -5,6 +5,10 @@ import com.game.players.Computer;
 import com.game.players.Player;
 import com.game.storage.StockInventory;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 public class GuiGame {
@@ -25,11 +29,10 @@ public class GuiGame {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-
         System.out.println("Created initial accounts!");
 
-    }
 
+    }
 
     public Player getPlayer() {
         return player;
@@ -55,6 +58,9 @@ public class GuiGame {
         this.stockInventory = stockInventory;
     }
 
+    public void reset(){
+        single_instance = null;
+    }
 
     public static GuiGame getInstance()
     {
