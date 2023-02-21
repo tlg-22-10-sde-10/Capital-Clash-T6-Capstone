@@ -10,8 +10,7 @@ import com.game.players.Player;
 import com.game.random.RandomNumberForNews;
 import com.game.stock.Stock;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.event.ChangeEvent;
@@ -22,6 +21,7 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
@@ -79,9 +79,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
 //    private static final int DIALOG = 5;
     int x = -7000;
-    int y = 100;
+    int y = 50;
     int a = -7000;
     int b = 200;
+    private static boolean playMusic;
 
 
     public void paint(Graphics g) {
@@ -118,6 +119,25 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
+    public static void playSound() {
+
+        try {
+            File musicPath = new File("/Users/jdcruz/Capital-Clash-T6-Capstone/src/main/resources/clash-app-song.wav");
+            if(musicPath.exists()){
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInput);
+                clip.start();
+            }
+            else{
+                System.out.println("Couldn't find Music file");
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
 
 
 
@@ -146,6 +166,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         // temp
         getPlayers();
+        playSound();
 
         setPreferredSize(new Dimension(1000, 1000));
 
