@@ -5,6 +5,7 @@ import com.game.news.News;
 import com.game.players.Computer;
 import com.game.players.Player;
 import com.game.stock.Stock;
+import com.game.stock.StockApi;
 import com.game.storage.StockInventory;
 
 import javax.sound.sampled.*;
@@ -126,17 +127,39 @@ public class GlobalMethodsAndAttributes {
         }
     }
 
+// original
+//    public static void updateDashboard(int day, int newsIndexOfTheDay, double mktReturnOfTheDay, StockInventory inventory) {
+//        if (day != 0) {
+//            for (Stock stock : inventory.getAllStocks()) {
+//                //stock
+//                double nextPrice = stock.UpdateStockPriceForTheDay(stock.getCurrentPrice(),
+//                        mktReturnOfTheDay, newsIndexOfTheDay);
+//
+//                stock.setCurrentPrice(nextPrice);
+//            }
+//        }
+//    }
+//
+
 
     public static void updateDashboard(int day, int newsIndexOfTheDay, double mktReturnOfTheDay, StockInventory inventory) {
         if (day != 0) {
             for (Stock stock : inventory.getAllStocks()) {
-                //stock
-                double nextPrice = stock.UpdateStockPriceForTheDay(stock.getCurrentPrice(),
-                        mktReturnOfTheDay, newsIndexOfTheDay);
+
+                Map<String, List<Double>> stockPrices = StockApi.getStockPrices();
+                List<Double> doubles = stockPrices.get(stock.getSymbol());
+                double nextPrice = doubles.get(day);
+
+                // format double
+                DecimalFormat df = new DecimalFormat("#.##");
+                String formattedNum = df.format(nextPrice);
+                nextPrice = Double.parseDouble(formattedNum);
+
                 stock.setCurrentPrice(nextPrice);
             }
         }
     }
+
 
     public static void showStockInventory(int day) {
         ui.titleBarForInventory(day);
