@@ -87,14 +87,9 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private List<Double> currentStockInventory;
     private Font digital7 = null;
 
-//    Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
-//    Font insiderFont = new Font("Bebas Neue", Font.BOLD, 20);
-//    Font btnFont = new Font("Bebas Neue", Font.BOLD, 15);
-    Font btnFont = new Font("Arial", Font.BOLD, 15);
+    Font gameFont = new Font("Arial", Font.BOLD, 35);
     Font insiderFont = new Font("Arial", Font.BOLD, 15);
-    Font gameFont = new Font("Arial", Font.BOLD, 30);
-
-
+    Font btnFont = new Font("Arial", Font.BOLD, 14);
 
     //    private static final int DIALOG = 5;
     int x = -7000;
@@ -171,14 +166,21 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
     }
 
-    public GameClientGui() {
+    public GameClientGui() throws IOException {
         setPreferredSize (new Dimension(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
         setLayout(null);
         setBackground(Color.decode(Global.BG_COLOR));
 
         // temp
         getPlayers();
-        playSound();
+
+        //background image
+        IconBuilder icon = new IconBuilder();
+        ImageIcon bg = icon.imageIcon("/stockbg.jpg", Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT, Image.SCALE_DEFAULT);
+
+        // Placing background image
+        JLabel bgImage = new JLabel(bg);
+        bgImage.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
 
         stockTableModel = new DefaultTableModel();
         cellRenderer = new DefaultTableCellRenderer();
@@ -221,11 +223,14 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         buyBtn.addActionListener(this);
         buyBtn.setBounds(325, 500, 150, 50);
         buyBtn.setEnabled(false);
-        buyBtn.setOpaque(true);
+        buyBtn.setOpaque(false);
         buyBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        buyBtn.setForeground(Color.WHITE);
+        buyBtn.setForeground(Color.decode(Global.BTN_COLOR));
         buyBtn.setBorder(null);
         buyBtn.setFont(btnFont);
+        ImageIcon buyIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel buyBg = new JLabel(buyIcon);
+        buyBg.setBounds(325, 500, 150, 50);
 
 
         // sell button
@@ -234,22 +239,28 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         sellBtn.addActionListener(this);
         sellBtn.setBounds(500, 500, 150, 50);
         sellBtn.setEnabled(false);
-        sellBtn.setOpaque(true);
+        sellBtn.setOpaque(false);
         sellBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        sellBtn.setForeground(Color.WHITE);
+        sellBtn.setForeground(Color.decode(Global.BTN_COLOR));
         sellBtn.setBorder(null);
         sellBtn.setFont(btnFont);
+        ImageIcon sellIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel sellBg = new JLabel(sellIcon);
+        sellBg.setBounds(500, 500, 150, 50);
 
         // insider trading button
         insiderBtn = new JButton("Insider Trade");
         insiderBtn.setActionCommand("insider");
         insiderBtn.addActionListener(this);
         insiderBtn.setBounds(325, 565, 150, 50);
-        insiderBtn.setOpaque(true);
+        insiderBtn.setOpaque(false);
         insiderBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        insiderBtn.setForeground(Color.WHITE);
+        insiderBtn.setForeground(Color.decode(Global.BTN_COLOR));
         insiderBtn.setBorder(null);
         insiderBtn.setFont(btnFont);
+        ImageIcon insiderIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel insiderBg = new JLabel(insiderIcon);
+        insiderBg.setBounds(325, 565, 150, 50);
 
 
         // end game disable until day 4
@@ -258,24 +269,27 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         endGame.addActionListener(this);
         endGame.setBounds(815, 500, 150, 50);
         endGame.setEnabled(false);
-        endGame.setOpaque(true);
+        endGame.setOpaque(false);
         endGame.setBackground(Color.decode(Global.MAIN_COLOR));
-        endGame.setForeground(Color.WHITE);
+        endGame.setForeground(Color.decode(Global.BTN_COLOR));
         endGame.setBorder(null);
         endGame.setFont(btnFont);
+        ImageIcon endGameIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel endGameBg = new JLabel(endGameIcon);
+        endGameBg.setBounds(815, 500, 150, 50);
 
         // current stock selected
         selectedStockLabel = new JLabel("Selected Stock:");
         selectedStockLabel.setFont(gameFont);
         scrollPane.setColumnHeaderView(selectedStockLabel);
-        selectedStockLabel.setBounds(450, 25, 400, 200);
-        selectedStockLabel.setForeground(Color.WHITE);
+        selectedStockLabel.setBounds(425, 25, 400, 200);
+        selectedStockLabel.setForeground(Color.white);
 
 
         // current day label
         currentDay = new JLabel("Day #" + currentTradingDayInt);
         currentDay.setFont(gameFont);
-        currentDay.setBounds(305, 25, 400, 200);
+        currentDay.setBounds(285, 25, 400, 200);
         currentDay.setForeground(Color.WHITE);
 
 
@@ -297,30 +311,35 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         currentDayButton.setActionCommand("increaseDay");
         currentDayButton.addActionListener(this);
         currentDayButton.setBounds(60, 500, 150, 50);
-        currentDayButton.setOpaque(true);
+        currentDayButton.setOpaque(false);
         currentDayButton.setBackground(Color.decode(Global.MAIN_COLOR));
-        currentDayButton.setForeground(Color.WHITE);
+        currentDayButton.setForeground(Color.decode(Global.BTN_COLOR));
         currentDayButton.setBorder(null);
         currentDayButton.setFont(btnFont);
+        ImageIcon endIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel endDayBg = new JLabel(endIcon);
+        endDayBg.setBounds(60, 500, 150, 50);
 
 
         // player account label
         playerAccount = new JLabel("", SwingConstants.CENTER);
-        playerAccount.setBounds(50, 150, 180, 300);
+        playerAccount.setBounds(50, 147, 170, 300);
         playerAccount.setVisible(true);
-
-        // needed for background color
-        playerAccount.setOpaque(true);
-        playerAccount.setBackground(Color.decode("#c9caca"));
+        playerAccount.setOpaque(false);
+        ImageIcon player = icon.imageIcon("/sidemenu.png", 210, 320, Image.SCALE_DEFAULT);
+        JLabel playerMenu = new JLabel(player);
+        playerMenu.setBounds(30, 138, 210, 320);
+        //playerAccount.setBackground(Color.decode("#c9caca"));
 
         // computer account label
         computerAccount = new JLabel("", SwingConstants.CENTER);
-        computerAccount.setBounds(800, 150, 180, 300);
+        computerAccount.setBounds(810, 147, 170, 300);
         computerAccount.setVisible(true);
-
-        // needed for background color
-        computerAccount.setOpaque(true);
-        computerAccount.setBackground(Color.decode("#c9caca"));
+        computerAccount.setOpaque(false);
+        ImageIcon computer = icon.imageIcon("/sidemenu.png", 210, 320, Image.SCALE_DEFAULT);
+        JLabel computerMenu = new JLabel(computer);
+        computerMenu.setBounds(790, 138, 210, 320);
+        //computerAccount.setBackground(Color.decode("#c9caca"));
 
         //buy stock slider
         buySlider = new JSlider(JSlider.HORIZONTAL, STOCK_MIN, STOCK_MAX, 1);
@@ -401,6 +420,14 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         add(endGame);
         add(currentDayButton);
         add(insiderBtn);
+        add(playerMenu);
+        add(computerMenu);
+        add(buyBg);
+        add(sellBg);
+        add(insiderBg);
+        add(endDayBg);
+        add(endGameBg);
+        add(bgImage);
 
     }
 
@@ -487,15 +514,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             String accNetBalance = i == 0 ? String.format("%.2f", netPlayerBalance) : String.format("%.2f", netComputerBalance);
 
             String accToString = "<html>" + accounts.get(i).getName()
-                    + "<br/><hr><br/>" + "\n Cash Balance: " + accCashBalance
-                    + "<br/><hr><br/>" + "\n Stocks: " + accStocks
+                    + "<br/><br/>" + "\n Stocks: " + accStocks
+                    + "<br/><br/><br/><br/><br/>" + "\n  Cash Balance: " + accCashBalance
                     + "<br/><hr><br/>" + "\n Stock Balance: " + accStockBalanceFormat
-                    + "<br/><hr><br/>" + "\n Net Balance: " + accNetBalance + "</html>";
+                    + "<br/><hr><br/>" + "\n Net Balance: " + accNetBalance + "<br/><hr></html>";
 
 
             System.out.println(accToString);
             accLabels.get(i).setText(accToString);
             accLabels.get(i).setFont(btnFont);
+            accLabels.get(i).setForeground(Color.white);
         }
     }
 
