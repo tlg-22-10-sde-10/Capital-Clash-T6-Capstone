@@ -2,6 +2,7 @@ package com.game.gui;
 
 import com.game.marketreturn.MarketReturnGenerator;
 import com.game.players.Computer;
+import com.game.stock.StockApi;
 import com.game.storage.StockInventory;
 import com.game.ui.GlobalMethodsAndAttributes;
 import com.game.ui.TradingRoomMenuTwo;
@@ -25,11 +26,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import static com.game.ui.TradingRoomMenuOne.buyStock;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -88,7 +91,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     Font insiderFont = new Font("Arial", Font.BOLD, 15);
     Font btnFont = new Font("Arial", Font.BOLD, 14);
 
-//    private static final int DIALOG = 5;
+    //    private static final int DIALOG = 5;
     int x = -7000;
     int y = 50;
     int a = -7000;
@@ -130,22 +133,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-    public static void playSound() {
 
-        try {
-            File musicPath = new File("/clash-app-song.wav");
-            if(musicPath.exists()){
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-                clip.start();
-            }
-            else{
-                System.out.println("Couldn't find Music file");
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
+    public static void playMusic() {
+
+        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
+        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception e) {
+            System.out.println("Error playing sound: " + e.getMessage());
         }
     }
 
@@ -156,6 +153,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         this.player = test.getPlayer();
         this.computer = test.getComputer();
         this.stockInventory = test.getStockInventory();
+
         try {
             InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
             digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
@@ -175,7 +173,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         // temp
         getPlayers();
-        playSound();
 
         //background image
         IconBuilder icon = new IconBuilder();
