@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class InsiderTradePanel extends JPanel implements ActionListener {
     private JButton noBtn;
     private JButton yesBtn;
-    Font btnFont = new Font("Bebas Neue", Font.BOLD, 20);
+    Font btnFont = new Font("Arial", Font.BOLD, 20);
     public InsiderTradePanel() throws IOException {
         // Setting up the dimensions and background color
         setPreferredSize (new Dimension(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
@@ -31,7 +31,7 @@ public class InsiderTradePanel extends JPanel implements ActionListener {
         yesBtn.setBounds(400, 675, 125, 50);
         yesBtn.setOpaque(true);
         yesBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        yesBtn.setForeground(Color.WHITE);
+        yesBtn.setForeground(Color.decode(Global.BTN_COLOR));
         yesBtn.setBorder(null);
         yesBtn.setFont(btnFont);
 
@@ -41,7 +41,7 @@ public class InsiderTradePanel extends JPanel implements ActionListener {
         noBtn.setBounds(550, 675, 125, 50);
         noBtn.setOpaque(true);
         noBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        noBtn.setForeground(Color.WHITE);
+        noBtn.setForeground(Color.decode(Global.BTN_COLOR));
         noBtn.setBorder(null);
         noBtn.setFont(btnFont);
 
