@@ -39,7 +39,7 @@ public class TitlePanel extends JPanel implements ActionListener {
         // Start button
         JButton startBtn = new JButton("START");
         startBtn.setOpaque(true);
-        startBtn.setBackground(Color.decode("#65a147"));
+        startBtn.setBackground(Color.decode(Global.MAIN_COLOR));
         startBtn.setForeground(Color.WHITE);
         startBtn.setBorder(null);
         startBtn.setFont(btnFont);

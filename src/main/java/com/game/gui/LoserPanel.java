@@ -24,7 +24,7 @@ public class LoserPanel extends JPanel implements ActionListener {
     private Computer computer;
     StockInventory stockInventory;
 
-    public LoserPanel() throws IOException, MissingFormatArgumentException {
+    public LoserPanel(double netPlayerBalance, double netComputerBalance) throws IOException, MissingFormatArgumentException {
 
         GuiGame test = GuiGame.getInstance();
 
@@ -42,8 +42,8 @@ public class LoserPanel extends JPanel implements ActionListener {
         JLabel imageLabel = new JLabel(titleIcon);
         imageLabel.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
 
-        double playerStockBalance = player.getBalanceFromHolding(stockInventory);
-        String yourB = String.format("%.2f", (playerStockBalance + player.getAccount().getCashBalance()));
+        //double playerStockBalance = player.getBalanceFromHolding(stockInventory);
+        String yourB = String.format("%.2f", netPlayerBalance);
         JTextArea yourBalance = new JTextArea(yourB);
 //        yourBalance.setFont(new Font("Arial "))
         yourBalance.setBounds(580, 358, 200, 25);
@@ -53,8 +53,8 @@ public class LoserPanel extends JPanel implements ActionListener {
         yourBalance.setLineWrap(true);
         add(yourBalance);
 
-        double computerStockBalance = computer.getBalanceFromHolding(stockInventory);
-        String brotherB = (String.format("%.2f", computerStockBalance + computer.getAccount().getCashBalance()));
+        //double computerStockBalance = computer.getBalanceFromHolding(stockInventory);
+        String brotherB = String.format("%.2f", netComputerBalance);
         JTextArea brotherBalance = new JTextArea(brotherB);
         brotherBalance.setBounds(795, 390, 200, 25);
         brotherBalance.setBackground(Color.black);
@@ -68,8 +68,8 @@ public class LoserPanel extends JPanel implements ActionListener {
         exitBtn.setOpaque(true);
         exitBtn.setBorder(null);
         exitBtn.setBounds(200, 525, 125, 40);
-        exitBtn.setBackground(Color.YELLOW);
-        exitBtn.setForeground(Color.black);
+        exitBtn.setBackground(Color.decode(Global.MAIN_COLOR));
+        exitBtn.setForeground(Color.white);
         exitBtn.setFont(startBtnFont);
         exitBtn.addActionListener(this);
         exitBtn.setActionCommand("yes");
@@ -78,8 +78,8 @@ public class LoserPanel extends JPanel implements ActionListener {
         exitBtn2.setOpaque(true);
         exitBtn2.setBorder(null);
         exitBtn2.setBounds(200, 600, 125, 40);
-        exitBtn2.setBackground(Color.YELLOW);
-        exitBtn2.setForeground(Color.black);
+        exitBtn2.setBackground(Color.decode(Global.MAIN_COLOR));
+        exitBtn2.setForeground(Color.white);
         exitBtn2.setFont(startBtnFont);
         exitBtn2.addActionListener(this);
         exitBtn2.setActionCommand("no");

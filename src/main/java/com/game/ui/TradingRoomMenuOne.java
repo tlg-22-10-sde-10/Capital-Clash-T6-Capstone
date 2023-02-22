@@ -53,7 +53,7 @@ public class TradingRoomMenuOne {
             System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"                          ***Successfully Purchased "+numberOfStockPurchaseByPlayer
                     +" shares of "+ GlobalMethodsAndAttributes.inventory.findBySymbol(stockSymbol).getStockName()+  "***\n"+           GlobalMethodsAndAttributes.ANSI_RESET);
 
-            GlobalMethodsAndAttributes.playAudio("cashier.wav.wav");
+            GlobalMethodsAndAttributes.playAudio("cashier.wav");
 
         }
         // brother randomly purchase the stock
@@ -108,7 +108,7 @@ public class TradingRoomMenuOne {
             System.out.println(GlobalMethodsAndAttributes.ANSI_GREEN+"***Successfully Purchased "+numberOfStockPurchaseByPlayer
                     +" shares of "+ inventory.findBySymbol(stockSymbol).getStockName()+  "***\n"+           GlobalMethodsAndAttributes.ANSI_RESET);
 
-            GlobalMethodsAndAttributes.playAudio("cashier.wav.wav");
+            GlobalMethodsAndAttributes.playAudio("cashier.wav");
             showMessageDialog(null, "Successfully purchased " + numberOfStockPurchaseByPlayer + " share(s) of " + inventory.findBySymbol(stockSymbol).getStockName());
 
         }
