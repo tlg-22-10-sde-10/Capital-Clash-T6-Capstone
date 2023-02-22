@@ -41,6 +41,7 @@ public class Frame implements ActionListener {
                 frameSize.width, frameSize.height );
         frame.setVisible(true);
         StockApi.getInstance();
+        GameClientGui.playMusic();
     }
 
     public static void getScreen(JPanel panel){

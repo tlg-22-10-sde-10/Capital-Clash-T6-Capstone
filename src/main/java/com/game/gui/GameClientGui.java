@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -137,22 +138,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-    public static void playSound() {
 
-        try {
-            File musicPath = new File("/Users/jdcruz/Capital-Clash-T6-Capstone/src/main/resources/clash-app-song.wav");
-            if(musicPath.exists()){
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-                clip.start();
-            }
-            else{
-                System.out.println("Couldn't find Music file");
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
+    public static void playMusic() {
+
+        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
+        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception e) {
+            System.out.println("Error playing sound: " + e.getMessage());
         }
     }
 
