@@ -2,6 +2,7 @@ package com.game.gui;
 
 import com.game.marketreturn.MarketReturnGenerator;
 import com.game.players.Computer;
+import com.game.stock.StockApi;
 import com.game.storage.StockInventory;
 import com.game.ui.GlobalMethodsAndAttributes;
 import com.game.ui.TradingRoomMenuTwo;
@@ -22,6 +23,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +57,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private int currentTradingDayInt = 0;
     private String currentSelectedStockTicker;
 
+
+
+    private JLabel timeLabel;
+
     private JLabel playerAccount;
     private JLabel computerAccount;
     private JButton endGame;
@@ -65,6 +74,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private StockInventory stockInventory;
     private List<Double> previousStockInventory;
     private List<Double> currentStockInventory;
+    private Font digital7 = null;
 
     Font btnFont = new Font("Bebas Neue", Font.BOLD, 40);
 
@@ -110,25 +120,17 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-    public static void playSound() {
+    public static void playMusic() {
 
-        try {
-            File musicPath = new File("/Users/jdcruz/Capital-Clash-T6-Capstone/src/main/resources/clash-app-song.wav");
-            if(musicPath.exists()){
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-                clip.start();
-            }
-            else{
-                System.out.println("Couldn't find Music file");
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
+        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
+        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception e) {
+            System.out.println("Error playing sound: " + e.getMessage());
         }
     }
-
 
     public void getPlayers() {
         GuiGame test = GuiGame.getInstance();
@@ -136,6 +138,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         this.player = test.getPlayer();
         this.computer = test.getComputer();
         this.stockInventory = test.getStockInventory();
+        try {
+            InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
+            digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(digital7);
+            System.out.println("created font");
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public GameClientGui() {
@@ -145,7 +157,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         // temp
         getPlayers();
-        playSound();
 
         setPreferredSize(new Dimension(1000, 1000));
 
@@ -216,11 +227,26 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         currentDay.setFont(btnFont);
         currentDay.setBounds(305, 25, 400, 200);
 
+
+        // clock label
+        timeLabel = new JLabel();
+        timeLabel.setFont(digital7.deriveFont(Font.PLAIN, 48));
+
+        timeLabel.setOpaque(true);
+        timeLabel.setBackground(Color.BLACK);
+
+        timeLabel.setBounds(400, 5, 170, 45);
+        timeLabel.setForeground(Color.GREEN);
+        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timeLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+
         // current day button
         currentDayButton = new JButton("End Trading Day");
         currentDayButton.setActionCommand("increaseDay");
         currentDayButton.addActionListener(this);
         currentDayButton.setBounds(100, 450, 150, 50);
+//        currentDayButton.setEnabled(false);
 
 
         // player account label
@@ -322,6 +348,38 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         return new JScrollPane(table);
 
     }
+
+
+    private void startClock() {
+        Thread clockThread = new Thread() {
+            public void run() {
+                LocalTime time = LocalTime.of(9, 30);
+                boolean startClock = true;
+
+                while (startClock) {
+                    time = time.plusMinutes(1);
+
+                    timeLabel.setText(DateTimeFormatter.ofPattern("hh:mm a").format(time));
+
+                    if (time.getHour() == 16) {
+//                        System.out.println("It is 4 PM now.");
+                        currentDayButton.setEnabled(true);
+
+                        startClock = false;
+                    } else {
+//                        System.out.println("It is not 4 PM yet.");
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        clockThread.start();
+    }
+
 
 
     private boolean comparePreviousStocks(int row) {
@@ -451,7 +509,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 previousStockInventory.add(price);
             }
 
-            if (currentTradingDayInt < 4) {
+            if (currentTradingDayInt < 12) {
                 currentTradingDayInt += 1;
 
                 System.out.println("Updating day...");
@@ -467,6 +525,9 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             } else {
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
+
+                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt+1, 0, 0.0, stockInventory);
+
             }
 
             for (int i = 0; i < stockInventory.getAllStocks().size(); i++) {
@@ -476,6 +537,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
             currentDay.setText("Day #" + currentTradingDayInt);
             setTableStockLabels();
+//            startClock();
         } else if (command.equals("end")) {
             try {
                   winOrLose();
