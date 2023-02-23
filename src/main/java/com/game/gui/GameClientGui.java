@@ -23,6 +23,7 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -136,9 +137,12 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
     public static void playMusic() {
 
-        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
-        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
-            Clip clip = AudioSystem.getClip();
+        //noinspection ConstantConditions
+        try (
+                InputStream inputStream = new BufferedInputStream(GameClientGui.class.getResourceAsStream("/clash-app-song.wav"));
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
+                Clip clip = AudioSystem.getClip();
+        ) {
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
         } catch (Exception e) {
