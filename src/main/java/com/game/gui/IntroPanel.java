@@ -35,13 +35,13 @@ public class IntroPanel extends JPanel implements ActionListener {
         // Continue button
         JButton startBtn = new JButton("PLAY");
         startBtn.setOpaque(true);
-        startBtn.setBackground(Color.decode("#65a147"));
+        startBtn.setBackground(Color.decode(Global.MAIN_COLOR));
         startBtn.setForeground(Color.WHITE);
         startBtn.setBorder(null);
         startBtn.setFont(btnFont);
         startBtn.addActionListener(this);
         startBtn.setActionCommand("continue");
-        startBtn.setBounds(448, 625, 125, 40);
+        startBtn.setBounds(448, 600, 125, 40);
 
         add(startBtn);
         add(imageLabel);
@@ -54,10 +54,9 @@ public class IntroPanel extends JPanel implements ActionListener {
                 TimeUnit.SECONDS.sleep(1);
 //                Frame.getScreen(gamePanel);
                 Frame.getScreen(new GameClientGui());
-            } catch (Exception error) {
+                        } catch (Exception error) {
                 System.out.println("An error occurred: " + error);
             }
         }
-
     }
 }

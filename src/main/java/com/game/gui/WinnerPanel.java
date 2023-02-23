@@ -27,7 +27,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
     private Computer computer;
     StockInventory stockInventory;
 
-    public WinnerPanel() throws IOException, MissingFormatArgumentException {
+    public WinnerPanel(double netPlayerBalance, double netComputerBalance) throws IOException, MissingFormatArgumentException {
 
         GuiGame test = GuiGame.getInstance();
 
@@ -46,7 +46,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
         imageLabel.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
 
         double playerStockBalance = player.getBalanceFromHolding(stockInventory);
-        String yourB = (String.format("%.2f", playerStockBalance + player.getAccount().getCashBalance()));
+        String yourB = String.format("%.2f", netPlayerBalance);
         JTextArea yourBalance = new JTextArea(yourB);
 //        yourBalance.setFont(new Font("Arial "))
         yourBalance.setBounds(600, 287, 200, 25);
@@ -57,7 +57,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
         add(yourBalance);
 
         double computerStockBalance = computer.getBalanceFromHolding(stockInventory);
-        String brotherB = (String.format("%.2f", computerStockBalance + computer.getAccount().getCashBalance()));
+        String brotherB = String.format("%.2f", netComputerBalance);
         JTextArea brotherBalance = new JTextArea(brotherB);
         brotherBalance.setBounds(765, 317, 200, 25);
         brotherBalance.setBackground(Color.black);
@@ -71,8 +71,8 @@ public class WinnerPanel extends JPanel implements ActionListener {
         exitBtn.setOpaque(true);
         exitBtn.setBorder(null);
         exitBtn.setBounds(200, 525, 125, 40);
-        exitBtn.setBackground(Color.YELLOW);
-        exitBtn.setForeground(Color.black);
+        exitBtn.setBackground(Color.decode(Global.MAIN_COLOR));
+        exitBtn.setForeground(Color.white);
         exitBtn.setFont(startBtnFont);
         exitBtn.addActionListener(this);
         exitBtn.setActionCommand("yes");
@@ -81,8 +81,8 @@ public class WinnerPanel extends JPanel implements ActionListener {
         exitBtn2.setOpaque(true);
         exitBtn2.setBorder(null);
         exitBtn2.setBounds(200, 600, 125, 40);
-        exitBtn2.setBackground(Color.YELLOW);
-        exitBtn2.setForeground(Color.black);
+        exitBtn2.setBackground(Color.decode(Global.MAIN_COLOR));
+        exitBtn2.setForeground(Color.white);
         exitBtn2.setFont(startBtnFont);
         exitBtn2.addActionListener(this);
         exitBtn2.setActionCommand("no");
@@ -93,16 +93,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
         add(exitBtn2);
         add(imageLabel);
 
-        Computer computer;
-//        System.out.println(String.format("%.2f", computer.getAccount().getCashBalance()));
-//        Computer player = null;
-//        System.out.println(String.format("%.2f", player.getAccount().getCashBalance()));
-
     }
-    int x = 0;
-    int y= 100;
-    int a = 400;
-    int b = 200;
 
     @Override
     public void actionPerformed(ActionEvent e) {
