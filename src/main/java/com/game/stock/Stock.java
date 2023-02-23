@@ -93,6 +93,7 @@ public class Stock {
     public double UpdateStockPriceForTheDay(double currentPrice, double mktReturn, int newsIndex) {
 
         double ans=999;
+        System.out.println("NEWS INDEX: " + newsIndex);
         switch (newsIndex) {
             //case 1, 6, 7 will  be handled in game.java because only the mktReturn is the variable.
             case 2:
@@ -172,6 +173,7 @@ public class Stock {
                 break;
 
             case 10:
+                System.out.println("INCREASING COSTCO");
                 if(this.symbol.equalsIgnoreCase("COST")){
                     Random random = new Random();
                     double residualInMethod=(random.nextDouble() * (2) + 2) / 100;
@@ -184,7 +186,8 @@ public class Stock {
                 break;
 
             default:
-                ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+this.alpha)));
+//                ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+this.alpha)));
+                ans = currentPrice;
 
         }
         return ans;

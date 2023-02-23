@@ -23,7 +23,6 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -32,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
 
 import static com.game.ui.TradingRoomMenuOne.buyStock;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -68,6 +66,8 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private int currentTradingDayInt = 0;
     private String currentSelectedStockTicker;
 
+    private String todayNews;
+    private int newsIndexOfTheDay;
 
 
     private JLabel timeLabel;
@@ -87,99 +87,27 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private List<Double> currentStockInventory;
     private Font digital7 = null;
 
-//    Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
+    //    Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
 //    Font insiderFont = new Font("Bebas Neue", Font.BOLD, 20);
 //    Font btnFont = new Font("Bebas Neue", Font.BOLD, 15);
     Font btnFont = new Font("Arial", Font.BOLD, 15);
     Font insiderFont = new Font("Arial", Font.BOLD, 15);
     Font gameFont = new Font("Arial", Font.BOLD, 30);
 
+    private JLabel scrollingBannerLabel;
 
-
-    //    private static final int DIALOG = 5;
-    int x = -7000;
-    int y = 50;
-    int a = -7000;
-    int b = 200;
-    private static boolean playMusic;
-
-
-    public void paint(Graphics g) {
-
-        super.paint(g);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.green);
-        g2d.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
-
-
-        g2d.drawString("Apple | AAPL | 143.72 | 1.72 | -0.0031 | 0.0 | Technology " +
-                " Boeing | BA | 213.03 | 0.95 | 0.0043 | 0.0 | Industrials" +
-                " Costco | COST | 511.14 | 1.16 | -0.0013 | 0.0 | ConsumerDefensive " +
-                " Delta Airlines | DAL | 38.97 | 1.17 | 0.004 | 0.0 | Industrials " +
-                " JP Morgan Chase | JPM | 139.96 | 0.88  0.0008 | 0.0 | FinancialServices " +
-                " Meta Platforms | META | 148.97 | -0.18 | 0.0036 | 0.0 | CommunicationServices " +
-                " Nike | NKE | 127.33 | -0.32 | 0.0063 | 0.0 | ConsumerCyclical " +
-                " Pfizer | PFE | 44.16 | 0.6 | -0.0012 | 0.0 | Healthcare " +
-                " Tesla | TSLA | 173.22 | 1.77 | -0.0056 | 0.0 | ConsumerDiscretionary " +
-                " United Health | UNH | 499.19 | 0.43 | -0.0021 | 0.0 | Healthcare ", x, y);
-
-        try {
-            Thread.sleep(100);
-            x += 20;
-
-            if (x > getWidth()) {
-                x = -7000;
-            }
-            repaint();
-
-        } catch (InterruptedException e) {
-            JOptionPane.showMessageDialog(this, e);
-
-        }
-    }
-
-
-    public static void playMusic() {
-
-        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
-        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (Exception e) {
-            System.out.println("Error playing sound: " + e.getMessage());
-        }
-    }
-
-
-    public void getPlayers() {
-        GuiGame test = GuiGame.getInstance();
-
-        this.player = test.getPlayer();
-        this.computer = test.getComputer();
-        this.stockInventory = test.getStockInventory();
-
-        try {
-            InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
-            digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(digital7);
-            System.out.println("created font");
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-        }
-
-    }
+    private int x = 1000;
 
     public GameClientGui() {
-        setPreferredSize (new Dimension(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
+        // temp
+        init();
+
+        setPreferredSize(new Dimension(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
         setLayout(null);
         setBackground(Color.decode(Global.BG_COLOR));
 
-        // temp
-        getPlayers();
-        playSound();
 
+        // table that holds stocks
         stockTableModel = new DefaultTableModel();
         cellRenderer = new DefaultTableCellRenderer();
 
@@ -331,9 +259,18 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         buySlider.setPaintTicks(true);
         buySlider.setPaintLabels(true);
 
+        // stock scrolling banner
+        String htmlColor = scrollingBannerStringBuilder();
+        scrollingBannerLabel = new JLabel();
+        scrollingBannerLabel.setText(htmlColor);
+        scrollingBannerLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+        scrollingBannerLabel.setForeground(Color.GREEN);
+        scrollingBannerLabel.setBounds(x, 35, 11400, 50);
+
+
         //buy stock quantity popup
         Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = new Dimension ( Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
+        Dimension frameSize = new Dimension(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
         quantityDialog = new JDialog(null, "", Dialog.ModalityType.DOCUMENT_MODAL);
         quantityDialog.setBounds(ss.width / 2 - frameSize.width / 4, ss.height / 2 - frameSize.height / 4, 500, 200);
         Container quantityContainer = quantityDialog.getContentPane();
@@ -401,8 +338,136 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         add(endGame);
         add(currentDayButton);
         add(insiderBtn);
+        add(scrollingBannerLabel);
 
     }
+
+
+    public String scrollingBannerStringBuilder() {
+
+
+        String scrollingBanner = "";
+        String defaultColor = "#00FF00";
+
+        //text width 11224
+        String start = "<html><font color='red'>BREAKING NEWS " + todayNews + "</font>";
+        String spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        String end = "</html>";
+
+        ArrayList<String> textList = new ArrayList<>(
+                Arrays.asList(
+                        spaces + "GameStop|GME|" + StockApi.getStockPrices().get("AAPL").get(currentTradingDayInt) + "|1.11|-0.0031|0.0|ConsumerCyclical",
+                        spaces + "Apple | AAPL | " + StockApi.getStockPrices().get("AAPL").get(currentTradingDayInt) + " | 1.72 | -0.0031 | 0.0 | Technology</font>",
+                        spaces + "Boeing | BA | " + StockApi.getStockPrices().get("BA").get(currentTradingDayInt) + " | 0.95 | 0.0043 | 0.0 | Industrials</font>",
+                        spaces + "Costco | COST |" + StockApi.getStockPrices().get("COST").get(currentTradingDayInt) + " | 1.16 | -0.0013 | 0.0 | ConsumerDefensive</font>",
+                        spaces + "Delta Airlines | DAL | " + StockApi.getStockPrices().get("DAL").get(currentTradingDayInt) + " | 1.17 | 0.004 | 0.0 | Industrials</font>",
+                        spaces + "JP Morgan Chase | JPM | " + StockApi.getStockPrices().get("JPM").get(currentTradingDayInt) + " | 0.88  0.0008 | 0.0 | FinancialServices</font>",
+                        spaces + "Meta Platforms | META | " + StockApi.getStockPrices().get("META").get(currentTradingDayInt) + " | -0.18 | 0.0036 | 0.0 | CommunicationServices</font>",
+                        spaces + "Nike | NKE | " + StockApi.getStockPrices().get("NKE").get(currentTradingDayInt) + " | -0.32 | 0.0063 | 0.0 | ConsumerCyclical</font>",
+                        spaces + "Pfizer | PFE | " + StockApi.getStockPrices().get("PFE").get(currentTradingDayInt) + " | 0.6 | -0.0012 | 0.0 | Healthcare</font>",
+                        spaces + "Tesla | TSLA | " + StockApi.getStockPrices().get("TSLA").get(currentTradingDayInt) + " | 1.77 | -0.0056 | 0.0 | ConsumerDiscretionary</font>",
+                        spaces + "United Health | UNH | " + StockApi.getStockPrices().get("UNH").get(currentTradingDayInt) + " | 0.43 | -0.0021 | 0.0 | Healthcare"));
+
+
+        if (previousStockInventory != null) {
+            for (int i = 0; i < previousStockInventory.size(); i++) {
+                boolean changeColor = comparePreviousStocks(i);
+
+                String result = changeColor ? "#00FF00" : "red";
+
+                String fontColor = "<font color=" + result + ">";
+                String stockLabel = textList.get(i);
+
+                stockLabel = fontColor + spaces + stockLabel;
+
+                textList.set(i, stockLabel);
+
+//                System.out.println("prev"+ previousStockInventory.size());
+//                System.out.println("string"+ textList.size());
+            }
+
+        } else {
+
+            for (int i = 0; i < textList.size(); i++) {
+                String fontColor = "<font color=" + defaultColor + ">";
+                String stockLabel = textList.get(i);
+                stockLabel = fontColor + spaces + stockLabel;
+                textList.set(i, stockLabel);
+            }
+        }
+
+//        System.out.println(textList.get(3));
+
+
+        StringBuilder sb = new StringBuilder();
+        for (String str : textList) {
+            sb.append(str);
+        }
+
+        String concatenatedString = sb.toString();
+
+
+        scrollingBanner = start + concatenatedString + end;
+
+
+        return scrollingBanner;
+
+    }
+
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        try {
+            Thread.sleep(100);
+            x -= 20;
+            scrollingBannerLabel.setLocation(x, 35);
+
+            if (x < -11300) {
+                x = 1000;
+            }
+            repaint();
+
+        } catch (InterruptedException e) {
+            JOptionPane.showMessageDialog(this, e);
+        }
+    }
+
+
+    public static void playMusic() {
+
+        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
+        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception e) {
+            System.out.println("Error playing sound: " + e.getMessage());
+        }
+    }
+
+
+    public void init() {
+        int newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
+        todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
+
+        GuiGame test = GuiGame.getInstance();
+
+        this.player = test.getPlayer();
+        this.computer = test.getComputer();
+        this.stockInventory = test.getStockInventory();
+
+        try {
+            InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
+            digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(digital7);
+            System.out.println("created font");
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     private JComponent createAlternating(DefaultTableModel model) {
         table = new JTable(model) {
@@ -414,7 +479,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 if (!isRowSelected(row) && previousStockInventory != null) {
                     boolean changeColor = comparePreviousStocks(row);
                     c.setForeground(changeColor ? Color.GREEN : Color.RED);
-                }else{
+                } else {
                     c.setForeground(Color.BLACK);
                 }
 
@@ -461,7 +526,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     }
 
 
-
     private boolean comparePreviousStocks(int row) {
 
         Double prevPrice = previousStockInventory.get(row);
@@ -493,7 +557,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                     + "<br/><hr><br/>" + "\n Net Balance: " + accNetBalance + "</html>";
 
 
-            System.out.println(accToString);
+//            System.out.println(accToString);
             accLabels.get(i).setText(accToString);
             accLabels.get(i).setFont(btnFont);
         }
@@ -530,9 +594,9 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         TiePanel tiePanel = new TiePanel(netPlayerBalance, netComputerBalance);
 
         if (netPlayerBalance < netComputerBalance) {
-             Frame.getScreen(loserPanel);
+            Frame.getScreen(loserPanel);
         } else if (netPlayerBalance > netComputerBalance) {
-             Frame.getScreen(winnerPanel);
+            Frame.getScreen(winnerPanel);
         } else {
             Frame.getScreen(tiePanel);
         }
@@ -586,6 +650,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         } else if (command.equals("increaseDay")) {
 
+
+            MarketReturnGenerator generator = new MarketReturnGenerator();
+            double mktReturnOfTheDay = generator.nextMarketReturn(newsIndexOfTheDay);
+
             previousStockInventory = new ArrayList<>();
             currentStockInventory = new ArrayList<>();
 
@@ -599,10 +667,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
                 System.out.println("Updating day...");
 
-                int newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
-                String todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
-                MarketReturnGenerator generator = new MarketReturnGenerator();
-                double mktReturnOfTheDay = generator.nextMarketReturn(newsIndexOfTheDay);
                 GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt, newsIndexOfTheDay, mktReturnOfTheDay, stockInventory);
 
                 updateAccountLabels();
@@ -611,7 +675,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
 
-                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt+1, 0, 0.0, stockInventory);
+                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt + 1, newsIndexOfTheDay, mktReturnOfTheDay, stockInventory);
 
             }
 
@@ -621,11 +685,18 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             }
 
             currentDay.setText("Day #" + currentTradingDayInt);
+
             setTableStockLabels();
-//            startClock();
+            newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
+            todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
+            String htmlColor = scrollingBannerStringBuilder();
+            scrollingBannerLabel.setText(htmlColor);
+            System.out.println("Today's News: " + todayNews);
+            //            startClock();
+
         } else if (command.equals("end")) {
             try {
-                  winOrLose();
+                winOrLose();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -660,7 +731,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                     GlobalMethodsAndAttributes.playAudio("cashier.wav");
                     updateAccountLabels();
                     insiderDialog.setVisible(false);
-                }  catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                     e.printStackTrace();
                 }
             }
@@ -672,9 +743,9 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider)e.getSource();
+        JSlider source = (JSlider) e.getSource();
         if (!source.getValueIsAdjusting()) {
-            stockQuantity = (int)source.getValue();
+            stockQuantity = (int) source.getValue();
             System.out.println(stockQuantity);
             quantity.setText(String.valueOf(stockQuantity));
         }
