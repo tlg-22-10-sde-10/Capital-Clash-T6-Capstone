@@ -72,7 +72,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
         exitBtn.setBorder(null);
         exitBtn.setBounds(200, 525, 125, 40);
         exitBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        exitBtn.setForeground(Color.white);
+        exitBtn.setForeground(Color.decode(Global.BTN_COLOR));
         exitBtn.setFont(startBtnFont);
         exitBtn.addActionListener(this);
         exitBtn.setActionCommand("yes");
@@ -82,7 +82,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
         exitBtn2.setBorder(null);
         exitBtn2.setBounds(200, 600, 125, 40);
         exitBtn2.setBackground(Color.decode(Global.MAIN_COLOR));
-        exitBtn2.setForeground(Color.white);
+        exitBtn2.setForeground(Color.decode(Global.BTN_COLOR));
         exitBtn2.setFont(startBtnFont);
         exitBtn2.addActionListener(this);
         exitBtn2.setActionCommand("no");
@@ -93,7 +93,13 @@ public class WinnerPanel extends JPanel implements ActionListener {
         add(exitBtn2);
         add(imageLabel);
 
+        Computer computer;
+//        System.out.println(String.format("%.2f", computer.getAccount().getCashBalance()));
+//        Computer player = null;
+//        System.out.println(String.format("%.2f", player.getAccount().getCashBalance()));
+
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

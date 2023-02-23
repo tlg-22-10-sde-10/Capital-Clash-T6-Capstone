@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class IntroPanel extends JPanel implements ActionListener {
-    Font btnFont = new Font("Bebas Neue", Font.BOLD, 20);
+    Font btnFont = new Font("Arial", Font.BOLD, 15);
     static GamePanel gamePanel;
     static {
         try {
@@ -33,17 +33,21 @@ public class IntroPanel extends JPanel implements ActionListener {
         imageLabel.setBounds (0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
 
         // Continue button
-        JButton startBtn = new JButton("PLAY");
-        startBtn.setOpaque(true);
-        startBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        startBtn.setForeground(Color.WHITE);
-        startBtn.setBorder(null);
-        startBtn.setFont(btnFont);
-        startBtn.addActionListener(this);
-        startBtn.setActionCommand("continue");
-        startBtn.setBounds(448, 600, 125, 40);
+        JButton playBtn = new JButton("Play");
+        playBtn.setOpaque(false);
+        playBtn.setBackground(Color.decode(Global.MAIN_COLOR));
+        playBtn.setForeground(Color.decode(Global.BTN_COLOR));
+        playBtn.setBorder(null);
+        playBtn.setFont(btnFont);
+        playBtn.addActionListener(this);
+        playBtn.setActionCommand("continue");
+        playBtn.setBounds(430, 600, 150, 50);
+        ImageIcon playIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel playBg = new JLabel(playIcon);
+        playBg.setBounds(430, 600, 150, 50);
 
-        add(startBtn);
+        add(playBtn);
+        add(playBg);
         add(imageLabel);
     }
 
@@ -54,8 +58,8 @@ public class IntroPanel extends JPanel implements ActionListener {
                 TimeUnit.SECONDS.sleep(1);
 //                Frame.getScreen(gamePanel);
                 Frame.getScreen(new GameClientGui());
-                        } catch (Exception error) {
-                System.out.println("An error occurred: " + error);
+            } catch (InterruptedException | IOException ex) {
+                ex.printStackTrace();
             }
         }
     }
