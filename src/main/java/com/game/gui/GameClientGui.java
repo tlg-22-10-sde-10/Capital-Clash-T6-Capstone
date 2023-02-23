@@ -263,13 +263,13 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         insiderBg.setBounds(60, 565, 150, 50);
 
 
-        // end game disable until day 4
+        // end game disable until day 12
         endGame = new JButton("End Game");
         endGame.setActionCommand("end");
         endGame.addActionListener(this);
         endGame.setBounds(815, 500, 150, 50);
         endGame.setEnabled(false);
-        endGame.setOpaque(false)
+        endGame.setOpaque(false);
         endGame.setBackground(Color.decode(Global.MAIN_COLOR));
         endGame.setForeground(Color.decode(Global.BTN_COLOR));
         endGame.setBorder(null);
