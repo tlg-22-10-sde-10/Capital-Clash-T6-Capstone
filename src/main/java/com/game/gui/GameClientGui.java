@@ -23,7 +23,6 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +31,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.Stack;
 
 import static com.game.ui.TradingRoomMenuOne.buyStock;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -68,7 +68,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private String currentSelectedStockTicker;
 
 
-
     private JLabel timeLabel;
 
     private JLabel playerAccount;
@@ -76,6 +75,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private JLabel computerAccount;
     private JTextPane computerStockList;
     private JButton endGame;
+    private JButton settings;
 
     private DefaultTableModel stockTableModel;
 
@@ -95,10 +95,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     //    private static final int DIALOG = 5;
     int x = -7000;
     int y = 50;
-    int a = -7000;
-    int b = 200;
-    private static boolean playMusic;
-
 
     public void paint(Graphics g) {
 
@@ -133,23 +129,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         }
     }
-
-
-    public static void playMusic() {
-
-        //noinspection ConstantConditions
-        try (
-                InputStream inputStream = new BufferedInputStream(GameClientGui.class.getResourceAsStream("/clash-app-song.wav"));
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
-                Clip clip = AudioSystem.getClip();
-        ) {
-            clip.open(audioInputStream);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (Exception e) {
-            System.out.println("Error playing sound: " + e.getMessage());
-        }
-    }
-
 
     public void getPlayers() {
         GuiGame test = GuiGame.getInstance();
@@ -281,6 +260,22 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         ImageIcon endGameIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
         JLabel endGameBg = new JLabel(endGameIcon);
         endGameBg.setBounds(815, 500, 150, 50);
+
+
+        // settings
+        settings = new JButton("settings");
+        settings.setActionCommand("settings");
+        settings.addActionListener(this);
+        settings.setBounds(815, 565, 150, 50);
+        settings.setEnabled(true);
+        settings.setOpaque(false);
+        settings.setBackground(Color.decode(Global.MAIN_COLOR));
+        settings.setForeground(Color.decode(Global.BTN_COLOR));
+        settings.setBorder(null);
+        settings.setFont(btnFont);
+        ImageIcon settingIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel settingBg = new JLabel(settingIcon);
+        settingBg.setBounds(815, 565, 150, 50);
 
         // current stock selected
         selectedStockLabel = new JLabel("Selected Stock:");
@@ -441,6 +436,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         add(endGame);
         add(currentDayButton);
         add(insiderBtn);
+        add(settings);
         add(playerMenu);
         add(computerMenu);
         add(buyBg);
@@ -448,8 +444,8 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         add(insiderBg);
         add(endDayBg);
         add(endGameBg);
+        add(settingBg);
         add(bgImage);
-
     }
 
     private JComponent createAlternating(DefaultTableModel model) {
@@ -507,7 +503,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         };
         clockThread.start();
     }
-
 
 
     private boolean comparePreviousStocks(int row) {
@@ -596,7 +591,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         if (netPlayerBalance < netComputerBalance) {
              Frame.getScreen(loserPanel);
         } else if (netPlayerBalance > netComputerBalance) {
-             Frame.getScreen(winnerPanel);
+            Frame.getScreen(winnerPanel);
         } else {
             Frame.getScreen(tiePanel);
         }
@@ -675,7 +670,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
 
-                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt+1, 0, 0.0, stockInventory);
+                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt + 1, 0, 0.0, stockInventory);
 
             }
 
@@ -689,7 +684,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 //            startClock();
         } else if (command.equals("end")) {
             try {
-                  winOrLose();
+                winOrLose();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -724,21 +719,27 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                     GlobalMethodsAndAttributes.playAudio("cashier.wav");
                     updateAccountLabels();
                     insiderDialog.setVisible(false);
-                }  catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                     e.printStackTrace();
                 }
             }
         } else if (command.equals("insiderCancel")) {
             insiderDialog.setVisible(false);
+        } else if (command.equals("settings")) {
+            MusicPanel mp = null;
+            try {
+                mp = new MusicPanel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Frame.getScreen(mp);
         }
-
     }
-
     @Override
     public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider)e.getSource();
+        JSlider source = (JSlider) e.getSource();
         if (!source.getValueIsAdjusting()) {
-            stockQuantity = (int)source.getValue();
+            stockQuantity = (int) source.getValue();
             System.out.println(stockQuantity);
             quantity.setText(String.valueOf(stockQuantity));
         }

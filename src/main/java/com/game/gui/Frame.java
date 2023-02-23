@@ -8,12 +8,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public class Frame implements ActionListener {
+public class Frame extends Component implements ActionListener {
     private static JFrame frame;
     private static TitlePanel titlePanel;
+    Sound sound = new Sound();
+    MusicPanel mp;
 
 
     static {
@@ -41,8 +44,11 @@ public class Frame implements ActionListener {
                 frameSize.width, frameSize.height );
         frame.setVisible(true);
         StockApi.getInstance();
-        GameClientGui.playMusic();
+
+        URL sound = getClass().getResource("/clash-app-song.wav");
+        MusicPanel.playMusic(sound);
     }
+
 
     public static void getScreen(JPanel panel){
         frame.getContentPane().removeAll();

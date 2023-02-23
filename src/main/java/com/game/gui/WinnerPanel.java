@@ -107,10 +107,7 @@ public class WinnerPanel extends JPanel implements ActionListener {
 //        System.out.println(String.format("%.2f", player.getAccount().getCashBalance()));
 
     }
-    int x = 0;
-    int y= 100;
-    int a = 400;
-    int b = 200;
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
