@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +14,7 @@ public class MusicPanel extends JPanel implements ActionListener{
     static Sound sound = new Sound();
     JButton closeBtn;
 
-    public MusicPanel() {
+    public MusicPanel() throws IOException {
 
         setPreferredSize(new Dimension(Global.SCREEN_WID, Global.SCREEN_HT));
         JPanel inner = new JPanel();

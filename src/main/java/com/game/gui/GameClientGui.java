@@ -29,8 +29,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 import java.util.Stack;
 
@@ -72,7 +71,9 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private JLabel timeLabel;
 
     private JLabel playerAccount;
+    private JTextPane playerStockList;
     private JLabel computerAccount;
+    private JTextPane computerStockList;
     private JButton endGame;
     private JButton settings;
 
@@ -234,7 +235,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         insiderBtn = new JButton("Insider Trade");
         insiderBtn.setActionCommand("insider");
         insiderBtn.addActionListener(this);
-        insiderBtn.setBounds(325, 565, 150, 50);
+        insiderBtn.setBounds(60, 565, 150, 50);
         insiderBtn.setOpaque(false);
         insiderBtn.setBackground(Color.decode(Global.MAIN_COLOR));
         insiderBtn.setForeground(Color.decode(Global.BTN_COLOR));
@@ -242,10 +243,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         insiderBtn.setFont(btnFont);
         ImageIcon insiderIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
         JLabel insiderBg = new JLabel(insiderIcon);
-        insiderBg.setBounds(325, 565, 150, 50);
+        insiderBg.setBounds(60, 565, 150, 50);
 
 
-        // end game disable until day 4
+        // end game disable until day 12
         endGame = new JButton("End Game");
         endGame.setActionCommand("end");
         endGame.addActionListener(this);
@@ -265,13 +266,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         settings = new JButton("settings");
         settings.setActionCommand("settings");
         settings.addActionListener(this);
-        settings.setBounds(815, 565, 70, 25);
+        settings.setBounds(815, 565, 150, 50);
         settings.setEnabled(true);
-        settings.setOpaque(true);
+        settings.setOpaque(false);
         settings.setBackground(Color.decode(Global.MAIN_COLOR));
-        settings.setForeground(Color.WHITE);
+        settings.setForeground(Color.decode(Global.BTN_COLOR));
         settings.setBorder(null);
         settings.setFont(btnFont);
+        ImageIcon settingIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel settingBg = new JLabel(settingIcon);
+        settingBg.setBounds(815, 565, 150, 50);
 
         // current stock selected
         selectedStockLabel = new JLabel("Selected Stock:");
@@ -324,7 +328,16 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         ImageIcon player = icon.imageIcon("/sidemenu.png", 210, 320, Image.SCALE_DEFAULT);
         JLabel playerMenu = new JLabel(player);
         playerMenu.setBounds(30, 138, 210, 320);
-        //playerAccount.setBackground(Color.decode("#c9caca"));
+
+        playerStockList = new JTextPane();
+        StyledDocument playerDoc = playerStockList.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        playerDoc.setParagraphAttributes(0, playerDoc.getLength(), center, false);
+        playerStockList.setBounds(50, 200, 170, 300);
+        playerStockList.setOpaque(false);
+        playerStockList.setFont(new Font("Arial", Font.BOLD, 12));
+
 
         // computer account label
         computerAccount = new JLabel("", SwingConstants.CENTER);
@@ -334,7 +347,14 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         ImageIcon computer = icon.imageIcon("/sidemenu.png", 210, 320, Image.SCALE_DEFAULT);
         JLabel computerMenu = new JLabel(computer);
         computerMenu.setBounds(790, 138, 210, 320);
-        //computerAccount.setBackground(Color.decode("#c9caca"));
+
+        computerStockList = new JTextPane();
+        StyledDocument compDoc = computerStockList.getStyledDocument();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        compDoc.setParagraphAttributes(0, playerDoc.getLength(), center, false);
+        computerStockList.setBounds(810, 200, 170, 300);
+        computerStockList.setOpaque(false);
+        computerStockList.setFont(new Font("Arial", Font.BOLD, 12));
 
         //buy stock slider
         buySlider = new JSlider(JSlider.HORIZONTAL, STOCK_MIN, STOCK_MAX, 1);
@@ -375,7 +395,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         quantityContainer.add(quantityPanel, BorderLayout.NORTH);
         quantityContainer.add(stockBtnPanel, BorderLayout.SOUTH);
 
-        // insider trading
+        // insider trading popup
         JPanel insiderBtnPanel = new JPanel();
         insiderBtnPanel.setLayout(new FlowLayout());
         confirmInsiderBtn = new JButton("Confirm");
@@ -386,7 +406,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         insiderBtnPanel.add(cancelInsiderBtn);
         JTextPane warning = new JTextPane();
         StyledDocument doc = warning.getStyledDocument();
-        SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         warning.setText("\nIf you successfully pull off insider trading there is a guaranteed 1% gain.\nHowever there is a 25% chance for the computer to gain 2%\nand a 25% chance to get caught and lose it all..");
@@ -409,12 +428,15 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         add(buyBtn);
         add(sellBtn);
         add(selectedStockLabel);
+        add(playerStockList);
+        add(computerStockList);
         add(playerAccount);
         add(computerAccount);
         add(currentDay);
         add(endGame);
         add(currentDayButton);
         add(insiderBtn);
+        add(settings);
         add(playerMenu);
         add(computerMenu);
         add(buyBg);
@@ -422,10 +444,8 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         add(insiderBg);
         add(endDayBg);
         add(endGameBg);
+        add(settingBg);
         add(bgImage);
-
-        add(insiderBtn);
-        add(settings);
     }
 
     private JComponent createAlternating(DefaultTableModel model) {
@@ -437,7 +457,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
                 if (!isRowSelected(row) && previousStockInventory != null) {
                     boolean changeColor = comparePreviousStocks(row);
-                    c.setForeground(changeColor ? Color.GREEN : Color.RED);
+                    c.setForeground(changeColor ? Color.decode("#65a147") : Color.RED);
                 }else{
                     c.setForeground(Color.BLACK);
                 }
@@ -504,24 +524,38 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         for (int i = 0; i < accounts.size(); i++) {
             //double accStockBalance = accounts.get(i).getBalanceFromHolding(stockInventory);
-            String accStocks = accounts.get(i).getStocks() == null ? "Empty" : accounts.get(i).getStocks().toString();
+            //String accStocks = accounts.get(i).getStocks().isEmpty() ? "None" : accounts.get(i).getStocks().toString();
             String accCashBalance = String.format("%.2f", accounts.get(i).getAccount().getCashBalance());
             String accStockBalanceFormat = String.format("%.2f", accounts.get(i).getBalanceFromHolding(stockInventory));
             String accNetBalance = i == 0 ? String.format("%.2f", netPlayerBalance) : String.format("%.2f", netComputerBalance);
-
+            printStockList(accounts.get(i));
             String accToString = "<html>" + accounts.get(i).getName()
-                    + "<br/><br/>" + "\n Stocks: " + accStocks
-                    + "<br/><br/><br/><br/><br/>" + "\n  Cash Balance: " + accCashBalance
-                    + "<br/><hr><br/>" + "\n Stock Balance: " + accStockBalanceFormat
-                    + "<br/><hr><br/>" + "\n Net Balance: " + accNetBalance + "<br/><hr></html>";
+                    + "<br/><hr> Stocks: <br/> <br/><br/> "
+                    + "<br/><br/><br/><br/><br/><br/><br/><br/>" + "\n  Cash Balance: " + accCashBalance
+                    + "<hr>" + "\n Stock Balance: " + accStockBalanceFormat
+                    + "<hr>" + "\n Net Balance: " + accNetBalance + "<br/><hr></html>";
 
 
             System.out.println(accToString);
             accLabels.get(i).setText(accToString);
             accLabels.get(i).setFont(btnFont);
             accLabels.get(i).setForeground(Color.white);
-            accLabels.get(i).setFont(btnFont);
         }
+    }
+
+    private void printStockList(Computer account) {
+        String stockList = "";
+        for (Map.Entry<String, Integer> entry : account.getStocks().entrySet()) {
+            stockList += entry.getKey() + ": " + entry.getValue() + " share(s)\n";
+        }
+        if (account == player) {
+            playerStockList.setText(stockList);
+            playerStockList.setForeground(Color.decode(Global.BTN_COLOR));
+        } else {
+            computerStockList.setText(stockList);
+            computerStockList.setForeground(Color.decode(Global.BTN_COLOR));
+        }
+
     }
 
     private void setTableStockLabels() {
@@ -685,28 +719,22 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                     GlobalMethodsAndAttributes.playAudio("cashier.wav");
                     updateAccountLabels();
                     insiderDialog.setVisible(false);
-                }  catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                     e.printStackTrace();
                 }
             }
         } else if (command.equals("insiderCancel")) {
             insiderDialog.setVisible(false);
         } else if (command.equals("settings")) {
-            MusicPanel mp = new MusicPanel();
-            Frame.getScreen(mp);
-        } else {
-                playerInsiderMultiplier += .01;
-                try {
-                    showMessageDialog(null, "Wow, you pulled it off!");
-                    GlobalMethodsAndAttributes.playAudio("cashier.wav");
-                    updateAccountLabels();
-                    insiderDialog.setVisible(false);
-                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-                    e.printStackTrace();
-                }
+            MusicPanel mp = null;
+            try {
+                mp = new MusicPanel();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            Frame.getScreen(mp);
         }
-
+    }
     @Override
     public void stateChanged(ChangeEvent e) {
         JSlider source = (JSlider) e.getSource();
