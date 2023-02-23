@@ -74,6 +74,7 @@ public class TitlePanel extends JPanel implements ActionListener {
                 JProgressBar progressBar = (JProgressBar) evt.getSource();
                 if (progressBar.getValue() == progressBar.getMaximum()) {
                     startBtn.setEnabled(true);
+                    progressBar.setString("Ready!");
                 }
             }
         });

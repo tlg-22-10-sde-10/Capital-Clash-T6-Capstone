@@ -41,10 +41,10 @@ public class IntroPanel extends JPanel implements ActionListener {
         playBtn.setFont(btnFont);
         playBtn.addActionListener(this);
         playBtn.setActionCommand("continue");
-        playBtn.setBounds(430, 600, 150, 50);
+        playBtn.setBounds(430, 525, 150, 50);
         ImageIcon playIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
         JLabel playBg = new JLabel(playIcon);
-        playBg.setBounds(430, 600, 150, 50);
+        playBg.setBounds(430, 525, 150, 50);
 
         add(playBtn);
         add(playBg);
@@ -56,7 +56,6 @@ public class IntroPanel extends JPanel implements ActionListener {
         if(e.getActionCommand().equals("continue")) {
             try {
                 TimeUnit.SECONDS.sleep(1);
-//                Frame.getScreen(gamePanel);
                 Frame.getScreen(new GameClientGui());
             } catch (InterruptedException | IOException ex) {
                 ex.printStackTrace();

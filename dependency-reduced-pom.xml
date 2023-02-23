@@ -26,8 +26,6 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <shadedArtifactAttached>true</shadedArtifactAttached>
-              <shadedClassifierName>all</shadedClassifierName>
               <transformers>
                 <transformer>
                   <resource>META-INF/spring.handlers</resource>
