@@ -13,7 +13,6 @@ public class News {
             //case 2: BA residual will be random between 3% and 5%
             2,"Boeing to set up a new 737 MAX assembly line in Everett!",
 
-
             // decrease
             //case 3: PFE residual will be random between -4% and -2%
             3,"Pfizer Bids Adieu to Covid Boom Years!",
@@ -36,14 +35,13 @@ public class News {
             //case 8: UNH residual will be a random number between -4% to - 5%
             8,"Justice Dept. Sues to Block $13 Billion Deal by UnitedHealth Group!",
 
-
             // AAPl increase TSLA decrease
             //case 9: AAPL residual +3%  TSLA residual -3%
             9,"Apple may launch Apple Cars in 2024!",
 
-
             //case 10: COST residual will be random between 2% and 4%
             10,"Costco Might Raise Membership Fees in 2023!");
+
 
 
     public String getNewsContent(int num) {

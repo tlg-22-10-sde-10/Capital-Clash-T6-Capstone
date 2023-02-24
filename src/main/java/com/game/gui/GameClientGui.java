@@ -239,7 +239,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
 
         // current day label
-        currentDay = new JLabel("Day #" + currentTradingDayInt);
+        currentDay = new JLabel("Day #" + (currentTradingDayInt+1));
         currentDay.setFont(gameFont);
         currentDay.setBounds(285, 25, 400, 200);
         currentDay.setForeground(Color.WHITE);
@@ -523,6 +523,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         int newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
         todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
 
+
         GuiGame test = GuiGame.getInstance();
 
         this.player = test.getPlayer();
@@ -762,7 +763,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 previousStockInventory.add(price);
             }
 
-            if (currentTradingDayInt < 12) {
+            if (currentTradingDayInt < 8) {
                 currentTradingDayInt += 1;
 
                 System.out.println("Updating day...");
@@ -771,7 +772,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
                 updateAccountLabels();
 
+
+
             } else {
+                currentTradingDayInt += 1;
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
 
@@ -784,7 +788,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 currentStockInventory.add(price);
             }
 
-            currentDay.setText("Day #" + currentTradingDayInt);
+            currentDay.setText("Day #" + (currentTradingDayInt+1));
 
             setTableStockLabels();
             newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
