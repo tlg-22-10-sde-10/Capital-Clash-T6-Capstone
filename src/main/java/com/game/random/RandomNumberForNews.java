@@ -18,9 +18,9 @@ public class RandomNumberForNews {
         }
         shownNews.add(number);
 
-//        if(shownNews.size()>=5){
-//            shownNews.clear();
-//        }
+        if(shownNews.size()>=9){
+            shownNews.clear();
+        }
 
         return number;
     }
