@@ -1,15 +1,10 @@
 package com.game.gui;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +15,7 @@ public class TitlePanel extends JPanel implements ActionListener {
     private JProgressBar progressBar;
 
     IntroPanel introPanel = new IntroPanel();
-    Font btnFont = new Font("Bebas Neue", Font.BOLD, 20);
+    Font btnFont = new Font("Arial", Font.BOLD, 20);
 
     public TitlePanel() throws IOException {
         // Setting up the dimensions and background color
@@ -34,55 +29,60 @@ public class TitlePanel extends JPanel implements ActionListener {
 
         // Placing the background image
         JLabel imageLabel = new JLabel(titleIcon);
-        imageLabel.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
+        imageLabel.setBounds(0, -50, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
+
 
         // Start button
-        JButton startBtn = new JButton("START");
-        startBtn.setOpaque(true);
+        JButton startBtn = new JButton("Start");
+        startBtn.setOpaque(false);
         startBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        startBtn.setForeground(Color.WHITE);
+        startBtn.setForeground(Color.decode(Global.BTN_COLOR));
         startBtn.setBorder(null);
         startBtn.setFont(btnFont);
         startBtn.addActionListener(this);
         startBtn.setActionCommand("start");
-        startBtn.setBounds(448, 525, 125, 40);
+        startBtn.setBounds(430, 525, 150, 50);
         startBtn.setEnabled(false);
+        ImageIcon startIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel startBg = new JLabel(startIcon);
+        startBg.setBounds(430, 525, 150, 50);
 
         // progress bar
         progressBar = new JProgressBar();
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
-        progressBar.setBounds(360, 575, 300, 25);
-        progressBar.setString("Loading api...");
+        progressBar.setBounds(360, 595, 300, 25);
+        progressBar.setForeground(Color.decode("#63a344"));
+        //progressBar.setString("Loading api...");
 
 
 
         add(progressBar);
         add(startBtn);
+        add(startBg);
         add(imageLabel);
 
 
         fillProgressBar(progressBar, 7);
 
 
-        progressBar.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
+        progressBar.addChangeListener(evt -> {
                 JProgressBar progressBar = (JProgressBar) evt.getSource();
                 if (progressBar.getValue() == progressBar.getMaximum()) {
                     startBtn.setEnabled(true);
+                    //progressBar.setString("Ready!");
                 }
-            }
         });
 
 
     }
 
+
     public static void fillProgressBar(JProgressBar progressBar, int durationInSeconds) {
-        // Same as in previous example
         int steps = 60;
         int delay = durationInSeconds * 1000 / steps;
 
-        SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
+        SwingWorker<Void, Integer> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
                 int progress = 0;

@@ -23,15 +23,13 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Stack;
 
 import static com.game.ui.TradingRoomMenuOne.buyStock;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -67,13 +65,17 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private int currentTradingDayInt = 0;
     private String currentSelectedStockTicker;
 
-
+    private String todayNews;
+    private int newsIndexOfTheDay;
 
     private JLabel timeLabel;
 
     private JLabel playerAccount;
+    private JTextPane playerStockList;
     private JLabel computerAccount;
+    private JTextPane computerStockList;
     private JButton endGame;
+    private JButton settings;
 
     private DefaultTableModel stockTableModel;
 
@@ -85,106 +87,37 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private List<Double> previousStockInventory;
     private List<Double> currentStockInventory;
     private Font digital7 = null;
+    private Font led = null;
 
-//    Font gameFont = new Font("Bebas Neue", Font.BOLD, 40);
-//    Font insiderFont = new Font("Bebas Neue", Font.BOLD, 20);
-//    Font btnFont = new Font("Bebas Neue", Font.BOLD, 15);
-    Font btnFont = new Font("Arial", Font.BOLD, 15);
+    private JLabel scrollingBannerLabel;
+
+
+    Font gameFont = new Font("Arial", Font.BOLD, 35);
     Font insiderFont = new Font("Arial", Font.BOLD, 15);
-    Font gameFont = new Font("Arial", Font.BOLD, 30);
+    Font btnFont = new Font("Arial", Font.BOLD, 14);
 
 
+    private int x = 1000;
 
-    //    private static final int DIALOG = 5;
-    int x = -7000;
-    int y = 50;
-    int a = -7000;
-    int b = 200;
-    private static boolean playMusic;
+    public GameClientGui() throws IOException {
+        // temp
+        init();
 
 
-    public void paint(Graphics g) {
-
-        super.paint(g);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.green);
-        g2d.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
-
-
-        g2d.drawString("Apple | AAPL | 143.72 | 1.72 | -0.0031 | 0.0 | Technology " +
-                " Boeing | BA | 213.03 | 0.95 | 0.0043 | 0.0 | Industrials" +
-                " Costco | COST | 511.14 | 1.16 | -0.0013 | 0.0 | ConsumerDefensive " +
-                " Delta Airlines | DAL | 38.97 | 1.17 | 0.004 | 0.0 | Industrials " +
-                " JP Morgan Chase | JPM | 139.96 | 0.88  0.0008 | 0.0 | FinancialServices " +
-                " Meta Platforms | META | 148.97 | -0.18 | 0.0036 | 0.0 | CommunicationServices " +
-                " Nike | NKE | 127.33 | -0.32 | 0.0063 | 0.0 | ConsumerCyclical " +
-                " Pfizer | PFE | 44.16 | 0.6 | -0.0012 | 0.0 | Healthcare " +
-                " Tesla | TSLA | 173.22 | 1.77 | -0.0056 | 0.0 | ConsumerDiscretionary " +
-                " United Health | UNH | 499.19 | 0.43 | -0.0021 | 0.0 | Healthcare ", x, y);
-
-        try {
-            Thread.sleep(100);
-            x += 20;
-
-            if (x > getWidth()) {
-                x = -7000;
-            }
-            repaint();
-
-        } catch (InterruptedException e) {
-            JOptionPane.showMessageDialog(this, e);
-
-        }
-    }
-
-    public static void playSound() {
-
-        try {
-            File musicPath = new File("/Users/jdcruz/Capital-Clash-T6-Capstone/src/main/resources/clash-app-song.wav");
-            if(musicPath.exists()){
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-                clip.start();
-            }
-            else{
-                System.out.println("Couldn't find Music file");
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
-
-    public void getPlayers() {
-        GuiGame test = GuiGame.getInstance();
-
-        this.player = test.getPlayer();
-        this.computer = test.getComputer();
-        this.stockInventory = test.getStockInventory();
-
-        try {
-            InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
-            digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(digital7);
-            System.out.println("created font");
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public GameClientGui() {
         setPreferredSize (new Dimension(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
         setLayout(null);
         setBackground(Color.decode(Global.BG_COLOR));
 
-        // temp
-        getPlayers();
-        playSound();
 
+        //background image
+        IconBuilder icon = new IconBuilder();
+        ImageIcon bg = icon.imageIcon("/stockbg.jpg", Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT, Image.SCALE_DEFAULT);
+
+        // Placing background image
+        JLabel bgImage = new JLabel(bg);
+        bgImage.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
+
+        // table that holds stocks
         stockTableModel = new DefaultTableModel();
         cellRenderer = new DefaultTableCellRenderer();
 
@@ -226,11 +159,14 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         buyBtn.addActionListener(this);
         buyBtn.setBounds(325, 500, 150, 50);
         buyBtn.setEnabled(false);
-        buyBtn.setOpaque(true);
+        buyBtn.setOpaque(false);
         buyBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        buyBtn.setForeground(Color.WHITE);
+        buyBtn.setForeground(Color.decode(Global.BTN_COLOR));
         buyBtn.setBorder(null);
         buyBtn.setFont(btnFont);
+        ImageIcon buyIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel buyBg = new JLabel(buyIcon);
+        buyBg.setBounds(325, 500, 150, 50);
 
 
         // sell button
@@ -239,48 +175,73 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         sellBtn.addActionListener(this);
         sellBtn.setBounds(500, 500, 150, 50);
         sellBtn.setEnabled(false);
-        sellBtn.setOpaque(true);
+        sellBtn.setOpaque(false);
         sellBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        sellBtn.setForeground(Color.WHITE);
+        sellBtn.setForeground(Color.decode(Global.BTN_COLOR));
         sellBtn.setBorder(null);
         sellBtn.setFont(btnFont);
+        ImageIcon sellIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel sellBg = new JLabel(sellIcon);
+        sellBg.setBounds(500, 500, 150, 50);
 
         // insider trading button
         insiderBtn = new JButton("Insider Trade");
         insiderBtn.setActionCommand("insider");
         insiderBtn.addActionListener(this);
-        insiderBtn.setBounds(325, 565, 150, 50);
-        insiderBtn.setOpaque(true);
+        insiderBtn.setBounds(60, 565, 150, 50);
+        insiderBtn.setOpaque(false);
         insiderBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        insiderBtn.setForeground(Color.WHITE);
+        insiderBtn.setForeground(Color.decode(Global.BTN_COLOR));
         insiderBtn.setBorder(null);
         insiderBtn.setFont(btnFont);
+        ImageIcon insiderIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel insiderBg = new JLabel(insiderIcon);
+        insiderBg.setBounds(60, 565, 150, 50);
 
 
-        // end game disable until day 4
+        // end game disable until day 12
         endGame = new JButton("End Game");
         endGame.setActionCommand("end");
         endGame.addActionListener(this);
         endGame.setBounds(815, 500, 150, 50);
         endGame.setEnabled(false);
-        endGame.setOpaque(true);
+        endGame.setOpaque(false);
         endGame.setBackground(Color.decode(Global.MAIN_COLOR));
-        endGame.setForeground(Color.WHITE);
+        endGame.setForeground(Color.decode(Global.BTN_COLOR));
         endGame.setBorder(null);
         endGame.setFont(btnFont);
+        ImageIcon endGameIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel endGameBg = new JLabel(endGameIcon);
+        endGameBg.setBounds(815, 500, 150, 50);
+
+
+        // settings
+        settings = new JButton("Settings");
+        settings.setActionCommand("settings");
+        settings.addActionListener(this);
+        settings.setBounds(815, 565, 150, 50);
+        settings.setEnabled(true);
+        settings.setOpaque(false);
+        settings.setBackground(Color.decode(Global.MAIN_COLOR));
+        settings.setForeground(Color.decode(Global.BTN_COLOR));
+        settings.setBorder(null);
+        settings.setFont(btnFont);
+        ImageIcon settingIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel settingBg = new JLabel(settingIcon);
+        settingBg.setBounds(815, 565, 150, 50);
 
         // current stock selected
         selectedStockLabel = new JLabel("Selected Stock:");
         selectedStockLabel.setFont(gameFont);
         scrollPane.setColumnHeaderView(selectedStockLabel);
-        selectedStockLabel.setBounds(450, 25, 400, 200);
-        selectedStockLabel.setForeground(Color.WHITE);
+        selectedStockLabel.setBounds(425, 25, 400, 200);
+        selectedStockLabel.setForeground(Color.white);
 
 
         // current day label
-        currentDay = new JLabel("Day #" + currentTradingDayInt);
+        currentDay = new JLabel("Day #" + (currentTradingDayInt+1));
         currentDay.setFont(gameFont);
-        currentDay.setBounds(305, 25, 400, 200);
+        currentDay.setBounds(285, 25, 400, 200);
         currentDay.setForeground(Color.WHITE);
 
 
@@ -302,30 +263,51 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         currentDayButton.setActionCommand("increaseDay");
         currentDayButton.addActionListener(this);
         currentDayButton.setBounds(60, 500, 150, 50);
-        currentDayButton.setOpaque(true);
+        currentDayButton.setOpaque(false);
         currentDayButton.setBackground(Color.decode(Global.MAIN_COLOR));
-        currentDayButton.setForeground(Color.WHITE);
+        currentDayButton.setForeground(Color.decode(Global.BTN_COLOR));
         currentDayButton.setBorder(null);
         currentDayButton.setFont(btnFont);
+        ImageIcon endIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel endDayBg = new JLabel(endIcon);
+        endDayBg.setBounds(60, 500, 150, 50);
 
 
         // player account label
         playerAccount = new JLabel("", SwingConstants.CENTER);
-        playerAccount.setBounds(50, 150, 180, 300);
+        playerAccount.setBounds(50, 147, 170, 300);
         playerAccount.setVisible(true);
+        playerAccount.setOpaque(false);
+        ImageIcon player = icon.imageIcon("/sidemenu.png", 210, 320, Image.SCALE_DEFAULT);
+        JLabel playerMenu = new JLabel(player);
+        playerMenu.setBounds(30, 138, 210, 320);
 
-        // needed for background color
-        playerAccount.setOpaque(true);
-        playerAccount.setBackground(Color.decode("#c9caca"));
+        playerStockList = new JTextPane();
+        StyledDocument playerDoc = playerStockList.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        playerDoc.setParagraphAttributes(0, playerDoc.getLength(), center, false);
+        playerStockList.setBounds(50, 200, 170, 300);
+        playerStockList.setOpaque(false);
+        playerStockList.setFont(new Font("Arial", Font.BOLD, 12));
+
 
         // computer account label
         computerAccount = new JLabel("", SwingConstants.CENTER);
-        computerAccount.setBounds(800, 150, 180, 300);
+        computerAccount.setBounds(810, 147, 170, 300);
         computerAccount.setVisible(true);
+        computerAccount.setOpaque(false);
+        ImageIcon computer = icon.imageIcon("/sidemenu.png", 210, 320, Image.SCALE_DEFAULT);
+        JLabel computerMenu = new JLabel(computer);
+        computerMenu.setBounds(790, 138, 210, 320);
 
-        // needed for background color
-        computerAccount.setOpaque(true);
-        computerAccount.setBackground(Color.decode("#c9caca"));
+        computerStockList = new JTextPane();
+        StyledDocument compDoc = computerStockList.getStyledDocument();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        compDoc.setParagraphAttributes(0, playerDoc.getLength(), center, false);
+        computerStockList.setBounds(810, 200, 170, 300);
+        computerStockList.setOpaque(false);
+        computerStockList.setFont(new Font("Arial", Font.BOLD, 12));
 
         //buy stock slider
         buySlider = new JSlider(JSlider.HORIZONTAL, STOCK_MIN, STOCK_MAX, 1);
@@ -335,6 +317,17 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         buySlider.setMinorTickSpacing(1);
         buySlider.setPaintTicks(true);
         buySlider.setPaintLabels(true);
+
+        // stock scrolling banner
+        String htmlColor = scrollingBannerStringBuilder();
+        scrollingBannerLabel = new JLabel();
+        scrollingBannerLabel.setText(htmlColor);
+//        scrollingBannerLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+        scrollingBannerLabel.setFont(led.deriveFont(Font.PLAIN, 35));
+
+        scrollingBannerLabel.setForeground(Color.decode("#00FF00"));
+        scrollingBannerLabel.setBounds(x, 35, 13500, 50);
+
 
         //buy stock quantity popup
         Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
@@ -366,7 +359,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         quantityContainer.add(quantityPanel, BorderLayout.NORTH);
         quantityContainer.add(stockBtnPanel, BorderLayout.SOUTH);
 
-        // insider trading
+        // insider trading popup
         JPanel insiderBtnPanel = new JPanel();
         insiderBtnPanel.setLayout(new FlowLayout());
         confirmInsiderBtn = new JButton("Confirm");
@@ -377,7 +370,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         insiderBtnPanel.add(cancelInsiderBtn);
         JTextPane warning = new JTextPane();
         StyledDocument doc = warning.getStyledDocument();
-        SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         warning.setText("\nIf you successfully pull off insider trading there is a guaranteed 1% gain.\nHowever there is a 25% chance for the computer to gain 2%\nand a 25% chance to get caught and lose it all..");
@@ -396,18 +388,158 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         // updates both player and computer
         updateAccountLabels();
 
+        add(scrollingBannerLabel);
         add(scrollPane);
         add(buyBtn);
         add(sellBtn);
         add(selectedStockLabel);
+        add(playerStockList);
+        add(computerStockList);
         add(playerAccount);
         add(computerAccount);
         add(currentDay);
         add(endGame);
         add(currentDayButton);
         add(insiderBtn);
+        add(settings);
+        add(playerMenu);
+        add(computerMenu);
+        add(buyBg);
+        add(sellBg);
+        add(insiderBg);
+        add(endDayBg);
+        add(endGameBg);
+        add(settingBg);
+        add(bgImage);
 
     }
+
+    public String scrollingBannerStringBuilder() {
+
+
+        String scrollingBanner = "";
+        String defaultColor = "#00FF00";
+
+        //text width 11224
+        String start = "<html><font color='#FF3131'>BREAKING NEWS " + todayNews + "</font>";
+        String spaces = "          ";
+        String end = "</html>";
+
+        ArrayList<String> textList = new ArrayList<>(
+                Arrays.asList(
+                        spaces + "GameStop | GME | " + StockApi.getStockPrices().get("AAPL").get(currentTradingDayInt) + " | 1.11 | -0.0031 | 0.0 | ConsumerCyclical",
+                        spaces + "Apple | AAPL | " + StockApi.getStockPrices().get("AAPL").get(currentTradingDayInt) + " | 1.72 | -0.0031 | 0.0 | Technology</font>",
+                        spaces + "Boeing | BA | " + StockApi.getStockPrices().get("BA").get(currentTradingDayInt) + " | 0.95 | 0.0043 | 0.0 | Industrials</font>",
+                        spaces + "Costco | COST |" + StockApi.getStockPrices().get("COST").get(currentTradingDayInt) + " | 1.16 | -0.0013 | 0.0 | ConsumerDefensive</font>",
+                        spaces + "Delta Airlines | DAL | " + StockApi.getStockPrices().get("DAL").get(currentTradingDayInt) + " | 1.17 | 0.004 | 0.0 | Industrials</font>",
+                        spaces + "JP Morgan Chase | JPM | " + StockApi.getStockPrices().get("JPM").get(currentTradingDayInt) + " | 0.88  0.0008 | 0.0 | FinancialServices</font>",
+                        spaces + "Meta Platforms | META | " + StockApi.getStockPrices().get("META").get(currentTradingDayInt) + " | -0.18 | 0.0036 | 0.0 | CommunicationServices</font>",
+                        spaces + "Nike | NKE | " + StockApi.getStockPrices().get("NKE").get(currentTradingDayInt) + " | -0.32 | 0.0063 | 0.0 | ConsumerCyclical</font>",
+                        spaces + "Pfizer | PFE | " + StockApi.getStockPrices().get("PFE").get(currentTradingDayInt) + " | 0.6 | -0.0012 | 0.0 | Healthcare</font>",
+                        spaces + "Tesla | TSLA | " + StockApi.getStockPrices().get("TSLA").get(currentTradingDayInt) + " | 1.77 | -0.0056 | 0.0 | ConsumerDiscretionary</font>",
+                        spaces + "United Health | UNH | " + StockApi.getStockPrices().get("UNH").get(currentTradingDayInt) + " | 0.43 | -0.0021 | 0.0 | Healthcare"));
+
+
+        if (previousStockInventory != null) {
+            for (int i = 0; i < previousStockInventory.size(); i++) {
+                boolean changeColor = comparePreviousStocks(i);
+
+                String result = changeColor ? "#00FF00" : "red";
+
+                String fontColor = "<font color=" + result + ">";
+                String stockLabel = textList.get(i);
+
+                stockLabel = fontColor + spaces + stockLabel;
+
+                textList.set(i, stockLabel);
+
+//                System.out.println("prev"+ previousStockInventory.size());
+//                System.out.println("string"+ textList.size());
+            }
+
+        } else {
+
+            for (int i = 0; i < textList.size(); i++) {
+                String fontColor = "<font color=" + defaultColor + ">";
+                String stockLabel = textList.get(i);
+                stockLabel = fontColor + spaces + stockLabel;
+                textList.set(i, stockLabel);
+            }
+        }
+
+//        System.out.println(textList.get(3));
+
+
+        StringBuilder sb = new StringBuilder();
+        for (String str : textList) {
+            sb.append(str);
+        }
+
+        String concatenatedString = sb.toString();
+
+
+        scrollingBanner = start + concatenatedString + end;
+
+
+        return scrollingBanner;
+
+    }
+
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        try {
+            Thread.sleep(100);
+            x -= 20;
+            scrollingBannerLabel.setLocation(x, 35);
+
+            if (x < -12500) {
+                x = 1000;
+            }
+            repaint();
+
+        } catch (InterruptedException e) {
+            JOptionPane.showMessageDialog(this, e);
+        }
+    }
+
+    public void init() {
+
+
+        int newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
+        todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
+
+
+        GuiGame test = GuiGame.getInstance();
+
+        this.player = test.getPlayer();
+        this.computer = test.getComputer();
+        this.stockInventory = test.getStockInventory();
+        this.currentTradingDayInt = test.getDay();
+
+        try {
+            InputStream is = getClass().getResourceAsStream("/led_counter-7.ttf");
+            digital7 = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(digital7);
+            System.out.println("Created font");
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
+            led = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(led);
+            System.out.println("Created font 2");
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     private JComponent createAlternating(DefaultTableModel model) {
         table = new JTable(model) {
@@ -418,7 +550,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
                 if (!isRowSelected(row) && previousStockInventory != null) {
                     boolean changeColor = comparePreviousStocks(row);
-                    c.setForeground(changeColor ? Color.GREEN : Color.RED);
+                    c.setForeground(changeColor ? Color.decode("#65a147") : Color.RED);
                 }else{
                     c.setForeground(Color.BLACK);
                 }
@@ -466,7 +598,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     }
 
 
-
     private boolean comparePreviousStocks(int row) {
 
         Double prevPrice = previousStockInventory.get(row);
@@ -486,22 +617,38 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         for (int i = 0; i < accounts.size(); i++) {
             //double accStockBalance = accounts.get(i).getBalanceFromHolding(stockInventory);
-            String accStocks = accounts.get(i).getStocks() == null ? "Empty" : accounts.get(i).getStocks().toString();
+            //String accStocks = accounts.get(i).getStocks().isEmpty() ? "None" : accounts.get(i).getStocks().toString();
             String accCashBalance = String.format("%.2f", accounts.get(i).getAccount().getCashBalance());
             String accStockBalanceFormat = String.format("%.2f", accounts.get(i).getBalanceFromHolding(stockInventory));
             String accNetBalance = i == 0 ? String.format("%.2f", netPlayerBalance) : String.format("%.2f", netComputerBalance);
-
+            printStockList(accounts.get(i));
             String accToString = "<html>" + accounts.get(i).getName()
-                    + "<br/><hr><br/>" + "\n Cash Balance: " + accCashBalance
-                    + "<br/><hr><br/>" + "\n Stocks: " + accStocks
-                    + "<br/><hr><br/>" + "\n Stock Balance: " + accStockBalanceFormat
-                    + "<br/><hr><br/>" + "\n Net Balance: " + accNetBalance + "</html>";
+                    + "<br/><hr> Stocks: <br/> <br/><br/> "
+                    + "<br/><br/><br/><br/><br/><br/><br/><br/>" + "\n  Cash Balance: " + accCashBalance
+                    + "<hr>" + "\n Stock Balance: " + accStockBalanceFormat
+                    + "<hr>" + "\n Net Balance: " + accNetBalance + "<br/><hr></html>";
 
 
-            System.out.println(accToString);
+//            System.out.println(accToString);
             accLabels.get(i).setText(accToString);
             accLabels.get(i).setFont(btnFont);
+            accLabels.get(i).setForeground(Color.white);
         }
+    }
+
+    private void printStockList(Computer account) {
+        String stockList = "";
+        for (Map.Entry<String, Integer> entry : account.getStocks().entrySet()) {
+            stockList += entry.getKey() + ": " + entry.getValue() + " share(s)\n";
+        }
+        if (account == player) {
+            playerStockList.setText(stockList);
+            playerStockList.setForeground(Color.decode(Global.BTN_COLOR));
+        } else {
+            computerStockList.setText(stockList);
+            computerStockList.setForeground(Color.decode(Global.BTN_COLOR));
+        }
+
     }
 
     private void setTableStockLabels() {
@@ -528,7 +675,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-    private void winOrLose() throws IOException {
+    private void winOrLose() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
         LoserPanel loserPanel = new LoserPanel(netPlayerBalance, netComputerBalance);
         WinnerPanel winnerPanel = new WinnerPanel(netPlayerBalance, netComputerBalance);
@@ -536,8 +683,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         if (netPlayerBalance < netComputerBalance) {
              Frame.getScreen(loserPanel);
+            GlobalMethodsAndAttributes.playAudio("sadTrombone.wav");
         } else if (netPlayerBalance > netComputerBalance) {
-             Frame.getScreen(winnerPanel);
+            Frame.getScreen(winnerPanel);
+            GlobalMethodsAndAttributes.playAudio("win.wav");
         } else {
             Frame.getScreen(tiePanel);
         }
@@ -591,6 +740,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         } else if (command.equals("increaseDay")) {
 
+
+            MarketReturnGenerator generator = new MarketReturnGenerator();
+            double mktReturnOfTheDay = generator.nextMarketReturn(newsIndexOfTheDay);
+
             previousStockInventory = new ArrayList<>();
             currentStockInventory = new ArrayList<>();
 
@@ -599,24 +752,23 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 previousStockInventory.add(price);
             }
 
-            if (currentTradingDayInt < 12) {
+            if (currentTradingDayInt < 8) {
                 currentTradingDayInt += 1;
 
                 System.out.println("Updating day...");
 
-                int newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
-                String todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
-                MarketReturnGenerator generator = new MarketReturnGenerator();
-                double mktReturnOfTheDay = generator.nextMarketReturn(newsIndexOfTheDay);
                 GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt, newsIndexOfTheDay, mktReturnOfTheDay, stockInventory);
 
                 updateAccountLabels();
 
+
+
             } else {
+                currentTradingDayInt += 1;
                 endGame.setEnabled(true);
                 currentDayButton.setEnabled(false);
 
-                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt+1, 0, 0.0, stockInventory);
+                GlobalMethodsAndAttributes.updateDashboard(currentTradingDayInt + 1, newsIndexOfTheDay, mktReturnOfTheDay, stockInventory);
 
             }
 
@@ -625,13 +777,21 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                 currentStockInventory.add(price);
             }
 
-            currentDay.setText("Day #" + currentTradingDayInt);
+            currentDay.setText("Day #" + (currentTradingDayInt+1));
+
+            GuiGame.getInstance().setDay(currentTradingDayInt);
             setTableStockLabels();
-//            startClock();
+            newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
+            todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
+            String htmlColor = scrollingBannerStringBuilder();
+            scrollingBannerLabel.setText(htmlColor);
+            System.out.println("Today's News: " + todayNews);
+            //            startClock();
+
         } else if (command.equals("end")) {
             try {
-                  winOrLose();
-            } catch (IOException e) {
+                winOrLose();
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                 e.printStackTrace();
             }
         } else if (command.equals("insider")) {
@@ -665,21 +825,27 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
                     GlobalMethodsAndAttributes.playAudio("cashier.wav");
                     updateAccountLabels();
                     insiderDialog.setVisible(false);
-                }  catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                     e.printStackTrace();
                 }
             }
         } else if (command.equals("insiderCancel")) {
             insiderDialog.setVisible(false);
+        } else if (command.equals("settings")) {
+            MusicPanel mp = null;
+            try {
+                mp = new MusicPanel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Frame.getScreen(mp);
         }
-
     }
-
     @Override
     public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider)e.getSource();
+        JSlider source = (JSlider) e.getSource();
         if (!source.getValueIsAdjusting()) {
-            stockQuantity = (int)source.getValue();
+            stockQuantity = (int) source.getValue();
             System.out.println(stockQuantity);
             quantity.setText(String.valueOf(stockQuantity));
         }

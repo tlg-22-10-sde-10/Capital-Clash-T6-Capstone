@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class LoserPanel extends JPanel implements ActionListener {
 
     IntroPanel introPanel = new IntroPanel();
-    Font startBtnFont = new Font("Times New Roman", Font.PLAIN, 30);
-    Font sorryYouLoseTextArea2Font = new Font("Serif", Font.PLAIN, 20);
+    Font startBtnFont = new Font("Arial", Font.PLAIN, 25);
+    Font sorryYouLoseTextArea2Font = new Font("Serif", Font.PLAIN, 25);
     JButton startBtn;
     JButton exitBtn;
     JButton exitBtn2;
@@ -65,30 +65,37 @@ public class LoserPanel extends JPanel implements ActionListener {
 
 
         exitBtn = new JButton("YES");
-        exitBtn.setOpaque(true);
+        exitBtn.setOpaque(false);
         exitBtn.setBorder(null);
-        exitBtn.setBounds(200, 525, 125, 40);
+        exitBtn.setBounds(200, 525, 150, 50);
         exitBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        exitBtn.setForeground(Color.white);
+        exitBtn.setForeground(Color.decode(Global.BTN_COLOR));
         exitBtn.setFont(startBtnFont);
         exitBtn.addActionListener(this);
         exitBtn.setActionCommand("yes");
+        ImageIcon yesIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel yesBg = new JLabel(yesIcon);
+        yesBg.setBounds(200, 525, 150, 50);
 
         exitBtn2 = new JButton("NO");
-        exitBtn2.setOpaque(true);
+        exitBtn2.setOpaque(false);
         exitBtn2.setBorder(null);
-        exitBtn2.setBounds(200, 600, 125, 40);
+        exitBtn2.setBounds(200, 600, 150, 50);
         exitBtn2.setBackground(Color.decode(Global.MAIN_COLOR));
-        exitBtn2.setForeground(Color.white);
+        exitBtn2.setForeground(Color.decode(Global.BTN_COLOR));
         exitBtn2.setFont(startBtnFont);
         exitBtn2.addActionListener(this);
         exitBtn2.setActionCommand("no");
-
+        ImageIcon noIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel noBg = new JLabel(noIcon);
+        noBg.setBounds(200, 600, 150, 50);
 
         setVisible(true);
         add(imageLabel);
         add(exitBtn);
         add(exitBtn2);
+        add(yesBg);
+        add(noBg);
 
         Computer computer;
 //        System.out.println(String.format("%.2f", computer.getAccount().getCashBalance()));
