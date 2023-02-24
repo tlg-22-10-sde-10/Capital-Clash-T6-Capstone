@@ -15,7 +15,7 @@ public class TitlePanel extends JPanel implements ActionListener {
     private JProgressBar progressBar;
 
     IntroPanel introPanel = new IntroPanel();
-    Font btnFont = new Font("Bebas Neue", Font.BOLD, 20);
+    Font btnFont = new Font("Arial", Font.BOLD, 20);
 
     public TitlePanel() throws IOException {
         // Setting up the dimensions and background color
@@ -33,16 +33,19 @@ public class TitlePanel extends JPanel implements ActionListener {
 
 
         // Start button
-        JButton startBtn = new JButton("START");
-        startBtn.setOpaque(true);
+        JButton startBtn = new JButton("Start");
+        startBtn.setOpaque(false);
         startBtn.setBackground(Color.decode(Global.MAIN_COLOR));
-        startBtn.setForeground(Color.WHITE);
+        startBtn.setForeground(Color.decode(Global.BTN_COLOR));
         startBtn.setBorder(null);
         startBtn.setFont(btnFont);
         startBtn.addActionListener(this);
         startBtn.setActionCommand("start");
-        startBtn.setBounds(448, 525, 125, 40);
+        startBtn.setBounds(430, 525, 150, 50);
         startBtn.setEnabled(false);
+        ImageIcon startIcon = icon.imageIcon("/buttonbg.png", 150, 50, Image.SCALE_DEFAULT);
+        JLabel startBg = new JLabel(startIcon);
+        startBg.setBounds(430, 525, 150, 50);
 
         // progress bar
         progressBar = new JProgressBar();
@@ -56,6 +59,7 @@ public class TitlePanel extends JPanel implements ActionListener {
 
         add(progressBar);
         add(startBtn);
+        add(startBg);
         add(imageLabel);
 
 
@@ -63,14 +67,16 @@ public class TitlePanel extends JPanel implements ActionListener {
 
 
         progressBar.addChangeListener(evt -> {
-            JProgressBar progressBar = (JProgressBar) evt.getSource();
-            if (progressBar.getValue() == progressBar.getMaximum()) {
-                startBtn.setEnabled(true);
-            }
+                JProgressBar progressBar = (JProgressBar) evt.getSource();
+                if (progressBar.getValue() == progressBar.getMaximum()) {
+                    startBtn.setEnabled(true);
+                    progressBar.setString("Ready!");
+                }
         });
 
 
     }
+
 
     public static void fillProgressBar(JProgressBar progressBar, int durationInSeconds) {
         int steps = 60;
