@@ -53,7 +53,7 @@ public class TitlePanel extends JPanel implements ActionListener {
         progressBar.setStringPainted(true);
         progressBar.setBounds(360, 595, 300, 25);
         progressBar.setForeground(Color.decode("#63a344"));
-        progressBar.setString("Loading api...");
+        //progressBar.setString("Loading api...");
 
 
 
@@ -70,7 +70,7 @@ public class TitlePanel extends JPanel implements ActionListener {
                 JProgressBar progressBar = (JProgressBar) evt.getSource();
                 if (progressBar.getValue() == progressBar.getMaximum()) {
                     startBtn.setEnabled(true);
-                    progressBar.setString("Ready!");
+                    //progressBar.setString("Ready!");
                 }
         });
 

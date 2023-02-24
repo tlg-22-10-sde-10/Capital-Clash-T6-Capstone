@@ -12,6 +12,7 @@ public class GuiGame {
     private Computer computer;
 
     private StockInventory stockInventory;
+    private int day;
 
     private static GuiGame single_instance = null;
 
@@ -53,6 +54,10 @@ public class GuiGame {
     public void setStockInventory(StockInventory stockInventory) {
         this.stockInventory = stockInventory;
     }
+
+    public int getDay() { return day; }
+
+    public void setDay(int day) { this.day = day; }
 
     public void reset(){
         single_instance = null;

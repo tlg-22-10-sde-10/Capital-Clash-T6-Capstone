@@ -325,8 +325,8 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 //        scrollingBannerLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
         scrollingBannerLabel.setFont(led.deriveFont(Font.PLAIN, 35));
 
-        scrollingBannerLabel.setForeground(Color.GREEN);
-        scrollingBannerLabel.setBounds(x, 35, 12700, 50);
+        scrollingBannerLabel.setForeground(Color.decode("#00FF00"));
+        scrollingBannerLabel.setBounds(x, 35, 13500, 50);
 
 
         //buy stock quantity popup
@@ -421,8 +421,8 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         String defaultColor = "#00FF00";
 
         //text width 11224
-        String start = "<html><font color='red'>BREAKING NEWS " + todayNews + "</font>";
-        String spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        String start = "<html><font color='#FF3131'>BREAKING NEWS " + todayNews + "</font>";
+        String spaces = "          ";
         String end = "</html>";
 
         ArrayList<String> textList = new ArrayList<>(
@@ -493,7 +493,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             x -= 20;
             scrollingBannerLabel.setLocation(x, 35);
 
-            if (x < -12800) {
+            if (x < -12500) {
                 x = 1000;
             }
             repaint();
@@ -688,16 +688,18 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-    private void winOrLose() throws IOException {
+    private void winOrLose() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
         LoserPanel loserPanel = new LoserPanel(netPlayerBalance, netComputerBalance);
         WinnerPanel winnerPanel = new WinnerPanel(netPlayerBalance, netComputerBalance);
         TiePanel tiePanel = new TiePanel(netPlayerBalance, netComputerBalance);
 
         if (netPlayerBalance < netComputerBalance) {
-            Frame.getScreen(loserPanel);
+             Frame.getScreen(loserPanel);
+            GlobalMethodsAndAttributes.playAudio("sadTrombone.wav");
         } else if (netPlayerBalance > netComputerBalance) {
             Frame.getScreen(winnerPanel);
+            GlobalMethodsAndAttributes.playAudio("win.wav");
         } else {
             Frame.getScreen(tiePanel);
         }
@@ -790,6 +792,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
             currentDay.setText("Day #" + (currentTradingDayInt+1));
 
+            GuiGame.getInstance().setDay(currentTradingDayInt);
             setTableStockLabels();
             newsIndexOfTheDay = RandomNumberForNews.getRandomNumber();
             todayNews = GlobalMethodsAndAttributes.news.getNewsContent(newsIndexOfTheDay);
@@ -801,7 +804,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         } else if (command.equals("end")) {
             try {
                 winOrLose();
-            } catch (IOException e) {
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                 e.printStackTrace();
             }
         } else if (command.equals("insider")) {
