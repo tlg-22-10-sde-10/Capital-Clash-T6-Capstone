@@ -1,15 +1,10 @@
 package com.game.gui;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +29,8 @@ public class TitlePanel extends JPanel implements ActionListener {
 
         // Placing the background image
         JLabel imageLabel = new JLabel(titleIcon);
-        imageLabel.setBounds(0, 0, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
+        imageLabel.setBounds(0, -50, Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT);
+
 
         // Start button
         JButton startBtn = new JButton("Start");
@@ -55,7 +51,8 @@ public class TitlePanel extends JPanel implements ActionListener {
         progressBar = new JProgressBar();
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
-        progressBar.setBounds(360, 575, 300, 25);
+        progressBar.setBounds(360, 595, 300, 25);
+        progressBar.setForeground(Color.decode("#63a344"));
         progressBar.setString("Loading api...");
 
 
@@ -69,25 +66,23 @@ public class TitlePanel extends JPanel implements ActionListener {
         fillProgressBar(progressBar, 7);
 
 
-        progressBar.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
+        progressBar.addChangeListener(evt -> {
                 JProgressBar progressBar = (JProgressBar) evt.getSource();
                 if (progressBar.getValue() == progressBar.getMaximum()) {
                     startBtn.setEnabled(true);
                     progressBar.setString("Ready!");
                 }
-            }
         });
 
 
     }
 
+
     public static void fillProgressBar(JProgressBar progressBar, int durationInSeconds) {
-        // Same as in previous example
         int steps = 60;
         int delay = durationInSeconds * 1000 / steps;
 
-        SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
+        SwingWorker<Void, Integer> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
                 int progress = 0;
