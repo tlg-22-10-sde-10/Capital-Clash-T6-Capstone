@@ -5,10 +5,6 @@ import com.game.players.Computer;
 import com.game.players.Player;
 import com.game.storage.StockInventory;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.io.File;
 import java.io.FileNotFoundException;
 
 public class GuiGame {
@@ -16,6 +12,7 @@ public class GuiGame {
     private Computer computer;
 
     private StockInventory stockInventory;
+    private int day;
 
     private static GuiGame single_instance = null;
 
@@ -57,6 +54,10 @@ public class GuiGame {
     public void setStockInventory(StockInventory stockInventory) {
         this.stockInventory = stockInventory;
     }
+
+    public int getDay() { return day; }
+
+    public void setDay(int day) { this.day = day; }
 
     public void reset(){
         single_instance = null;

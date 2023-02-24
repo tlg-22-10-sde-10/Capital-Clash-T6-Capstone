@@ -17,7 +17,8 @@ public class RandomNumberForNews {
             number = RANDOM.nextInt(RANGE) + 1;
         }
         shownNews.add(number);
-        if(shownNews.size()>=5){
+
+        if(shownNews.size()>=9){
             shownNews.clear();
         }
 

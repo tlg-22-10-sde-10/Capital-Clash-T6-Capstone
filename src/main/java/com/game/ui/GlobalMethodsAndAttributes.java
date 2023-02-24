@@ -87,7 +87,7 @@ public class GlobalMethodsAndAttributes {
                 ui.showWinBanner();
                 System.out.println("Your total balance is $"+ ANSI_GREEN + df.format(totalPlayerBalance) + ANSI_RESET + ".");
                 System.out.println("Your Brother's total balance is $"+ ANSI_RED + df.format(totalBrotherBalance) + ANSI_RESET + ".");
-                GlobalMethodsAndAttributes.playAudio("piglevelwin2mp3-14800.wav");
+                GlobalMethodsAndAttributes.playAudio("win.wav");
             }  else if (totalPlayerBalance < totalBrotherBalance) {
                 ui.showLoseBanner();
                 System.out.println("Your total balance is $"+ ANSI_RED + df.format(totalPlayerBalance) + ANSI_RESET + ".");
@@ -154,6 +154,14 @@ public class GlobalMethodsAndAttributes {
                 DecimalFormat df = new DecimalFormat("#.##");
                 String formattedNum = df.format(nextPrice);
                 nextPrice = Double.parseDouble(formattedNum);
+
+                System.out.println(stock.getSymbol() +" before market: " + nextPrice);
+
+                nextPrice = stock.UpdateStockPriceForTheDay(nextPrice,
+                        mktReturnOfTheDay, newsIndexOfTheDay,day);
+
+                System.out.println(stock.getSymbol() + " after market: " + nextPrice);
+
 
                 stock.setCurrentPrice(nextPrice);
             }
