@@ -64,7 +64,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     private JLabel currentDay;
     private JButton currentDayButton;
 
-    private int currentTradingDayInt = 0;
+    private int currentTradingDayInt;
     private String currentSelectedStockTicker;
 
 
@@ -136,6 +136,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         this.player = test.getPlayer();
         this.computer = test.getComputer();
         this.stockInventory = test.getStockInventory();
+        this.currentTradingDayInt = test.getDay();
 
         try {
             InputStream is = getClass().getResourceAsStream("/digital-7.ttf");
@@ -582,7 +583,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-    private void winOrLose() throws IOException {
+    private void winOrLose() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
         LoserPanel loserPanel = new LoserPanel(netPlayerBalance, netComputerBalance);
         WinnerPanel winnerPanel = new WinnerPanel(netPlayerBalance, netComputerBalance);
@@ -590,8 +591,10 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
         if (netPlayerBalance < netComputerBalance) {
              Frame.getScreen(loserPanel);
+            GlobalMethodsAndAttributes.playAudio("sadTrombone.wav");
         } else if (netPlayerBalance > netComputerBalance) {
             Frame.getScreen(winnerPanel);
+            GlobalMethodsAndAttributes.playAudio("win.wav");
         } else {
             Frame.getScreen(tiePanel);
         }
@@ -680,12 +683,13 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
             }
 
             currentDay.setText("Day #" + currentTradingDayInt);
+            GuiGame.getInstance().setDay(currentTradingDayInt);
             setTableStockLabels();
 //            startClock();
         } else if (command.equals("end")) {
             try {
                 winOrLose();
-            } catch (IOException e) {
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                 e.printStackTrace();
             }
         } else if (command.equals("insider")) {

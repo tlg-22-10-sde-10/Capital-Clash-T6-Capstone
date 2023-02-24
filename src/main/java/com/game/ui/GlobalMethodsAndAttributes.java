@@ -87,7 +87,7 @@ public class GlobalMethodsAndAttributes {
                 ui.showWinBanner();
                 System.out.println("Your total balance is $"+ ANSI_GREEN + df.format(totalPlayerBalance) + ANSI_RESET + ".");
                 System.out.println("Your Brother's total balance is $"+ ANSI_RED + df.format(totalBrotherBalance) + ANSI_RESET + ".");
-                GlobalMethodsAndAttributes.playAudio("piglevelwin2mp3-14800.wav");
+                GlobalMethodsAndAttributes.playAudio("win.wav");
             }  else if (totalPlayerBalance < totalBrotherBalance) {
                 ui.showLoseBanner();
                 System.out.println("Your total balance is $"+ ANSI_RED + df.format(totalPlayerBalance) + ANSI_RESET + ".");
