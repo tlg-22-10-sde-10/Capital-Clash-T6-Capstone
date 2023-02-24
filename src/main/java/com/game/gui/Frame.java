@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+
 public class Frame extends Component implements ActionListener {
     private static JFrame frame;
     private static TitlePanel titlePanel;

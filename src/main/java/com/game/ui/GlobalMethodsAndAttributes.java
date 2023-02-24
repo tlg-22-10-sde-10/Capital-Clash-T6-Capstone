@@ -155,6 +155,14 @@ public class GlobalMethodsAndAttributes {
                 String formattedNum = df.format(nextPrice);
                 nextPrice = Double.parseDouble(formattedNum);
 
+                System.out.println(stock.getSymbol() +" before market: " + nextPrice);
+
+                nextPrice = stock.UpdateStockPriceForTheDay(nextPrice,
+                        mktReturnOfTheDay, newsIndexOfTheDay,day);
+
+                System.out.println(stock.getSymbol() + " after market: " + nextPrice);
+
+
                 stock.setCurrentPrice(nextPrice);
             }
         }

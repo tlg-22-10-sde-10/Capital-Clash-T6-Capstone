@@ -5,10 +5,6 @@ import com.game.players.Computer;
 import com.game.players.Player;
 import com.game.storage.StockInventory;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.io.File;
 import java.io.FileNotFoundException;
 
 public class GuiGame {
