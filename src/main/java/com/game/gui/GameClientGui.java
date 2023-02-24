@@ -91,6 +91,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
     Font gameFont = new Font("Arial", Font.BOLD, 35);
     Font insiderFont = new Font("Arial", Font.BOLD, 15);
     Font btnFont = new Font("Arial", Font.BOLD, 14);
+    Sound sound = new Sound();
 
     //    private static final int DIALOG = 5;
     int x = -7000;
@@ -681,7 +682,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
 
             currentDay.setText("Day #" + currentTradingDayInt);
             setTableStockLabels();
-//            startClock();
+            startClock();
         } else if (command.equals("end")) {
             try {
                 winOrLose();
