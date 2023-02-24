@@ -503,20 +503,6 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         }
     }
 
-
-    public static void playMusic() {
-
-        URL url = GameClientGui.class.getResource("/clash-app-song.wav");
-        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url)) {
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (Exception e) {
-            System.out.println("Error playing sound: " + e.getMessage());
-        }
-    }
-
-
     public void init() {
 
 
@@ -529,6 +515,7 @@ public class GameClientGui extends JPanel implements ActionListener, ChangeListe
         this.player = test.getPlayer();
         this.computer = test.getComputer();
         this.stockInventory = test.getStockInventory();
+        this.currentTradingDayInt = test.getDay();
 
         try {
             InputStream is = getClass().getResourceAsStream("/led_counter-7.ttf");
