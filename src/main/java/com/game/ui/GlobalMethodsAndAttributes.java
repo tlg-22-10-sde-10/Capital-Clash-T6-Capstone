@@ -158,7 +158,7 @@ public class GlobalMethodsAndAttributes {
                 System.out.println(stock.getSymbol() +" before market: " + nextPrice);
 
                 nextPrice = stock.UpdateStockPriceForTheDay(nextPrice,
-                        mktReturnOfTheDay, newsIndexOfTheDay);
+                        mktReturnOfTheDay, newsIndexOfTheDay,day);
 
                 System.out.println(stock.getSymbol() + " after market: " + nextPrice);
 

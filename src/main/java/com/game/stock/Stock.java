@@ -89,11 +89,12 @@ public class Stock {
         return result;
     }
 
+
+    // original
     // price calculator based on the day
     public double UpdateStockPriceForTheDay(double currentPrice, double mktReturn, int newsIndex) {
 
         double ans=999;
-        System.out.println("NEWS INDEX: " + newsIndex);
         switch (newsIndex) {
             //case 1, 6, 7 will  be handled in game.java because only the mktReturn is the variable.
             case 2:
@@ -173,7 +174,6 @@ public class Stock {
                 break;
 
             case 10:
-                System.out.println("INCREASING COSTCO");
                 if(this.symbol.equalsIgnoreCase("COST")){
                     Random random = new Random();
                     double residualInMethod=(random.nextDouble() * (2) + 2) / 100;
@@ -186,11 +186,189 @@ public class Stock {
                 break;
 
             default:
-//                ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+this.alpha)));
+                ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+this.alpha)));
+
+        }
+        return ans;
+    }
+    public double UpdateStockPriceForTheDay(double currentPrice, double mktReturn, int newsIndex, int day) {
+
+        double ans=currentPrice;
+        double stockPrice = 0.0;
+
+        System.out.println("NEWS INDEX: " + newsIndex);
+        switch (newsIndex) {
+            //case 1, 6, 7 will  be handled in game.java because only the mktReturn is the variable.
+            case 2:
+                if(this.symbol.equalsIgnoreCase("BA")){
+                    Random random = new Random();
+                    double residualInMethod=(random.nextDouble() * (5 - 3) + 3) / 100.0;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+
+                    stockPrice = StockApi.getStockPricesDay("BA",day-1);
+
+                    if (ans<stockPrice){
+                        double dif = stockPrice - ans;
+//                        ans = stockPrice + dif;
+                        ans= Double.parseDouble(df.format(stockPrice + dif));
+                    }
+
+                }
+
+
+
+                break;
+
+            case 3:
+                if(this.symbol.equalsIgnoreCase("PFE")){
+                    Random random = new Random();
+                    double residualInMethod=(random.nextDouble() * (2) + (-4)) / 100.0;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+                    stockPrice = StockApi.getStockPricesDay("PFE",day-1);
+
+                    if (ans>stockPrice){
+                        double dif = ans - stockPrice;
+                        ans = ans - dif;
+                        ans = Double.parseDouble(df.format( stockPrice - dif));
+                    }
+
+                }
+
+                break;
+
+            case 4:
+
+                if(this.symbol.equalsIgnoreCase("META")){
+                    Random random = new Random();
+                    double residualInMethod=(random.nextDouble() * (6 - 3) + 3) / 100.0;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+
+                    stockPrice = StockApi.getStockPricesDay("META",day-1);
+
+                    if (ans<stockPrice){
+                        double dif = stockPrice - ans;
+//                        ans = stockPrice + dif;
+                        ans= Double.parseDouble(df.format(stockPrice + dif));
+
+                    }
+
+                }
+
+
+
+
+
+                break;
+
+            case 5:
+                if(this.symbol.equalsIgnoreCase("JPM")){
+                    Random random = new Random();
+                    double residualInMethod=(random.nextDouble() * (3) - 5) / 100;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+
+                    stockPrice = StockApi.getStockPricesDay("JPM",day-1);
+
+                    if (ans>stockPrice){
+                        double dif = ans - stockPrice;
+//                        ans = ans - dif;
+                        ans= Double.parseDouble(df.format( ans - dif));
+                    }
+
+                }
+
+
+
+                break;
+
+            case 8:
+                if(this.symbol.equalsIgnoreCase("UNH")){
+                    Random random = new Random();
+                    double residualInMethod=(random.nextDouble() * (1) - 5) / 100;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+
+                    stockPrice = StockApi.getStockPricesDay("UNH",day-1);
+
+                    if (ans>stockPrice){
+                        double dif = ans - stockPrice;
+//                        ans = ans - dif;
+                        ans= Double.parseDouble(df.format( ans - dif));
+
+                    }
+
+
+                }
+
+
+
+                break;
+
+            case 9:
+                if(this.symbol.equalsIgnoreCase("AAPL")){
+                    double residualInMethod=0.03;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+                    stockPrice = StockApi.getStockPricesDay("AAPL",day-1);
+
+                    if (ans<stockPrice){
+                        double dif = stockPrice - ans;
+//                        ans = stockPrice + dif;
+                        ans= Double.parseDouble(df.format( stockPrice + dif));
+
+                    }
+
+                }else if(this.symbol.equalsIgnoreCase("TSLA")){
+                    double residualInMethod=-0.03;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+
+                    stockPrice = StockApi.getStockPricesDay("TSLA",day-1);
+
+                    if (ans>stockPrice){
+                        double dif = ans - stockPrice;
+                        ans = ans - dif;
+                        ans = Double.parseDouble(df.format( stockPrice - dif));
+                    }
+
+                }
+                break;
+
+            case 10:
+                if(this.symbol.equalsIgnoreCase("COST")){
+                    System.out.println("INCREASING COSTCO");
+
+                    Random random = new Random();
+                    double residualInMethod=(random.nextDouble() * (2) + 2) / 100;
+                    ans= Double.parseDouble(df.format(currentPrice*(1+mktReturn*this.beta+
+                            this.alpha+residualInMethod)));
+
+                    stockPrice = StockApi.getStockPricesDay("COST",day-1);
+
+                    if (ans<stockPrice){
+                        double dif = stockPrice - ans;
+//                        ans = stockPrice + dif;
+                        ans= Double.parseDouble(df.format( stockPrice + dif));
+                    }
+                }
+
+                break;
+
+            default:
                 ans = currentPrice;
 
         }
         return ans;
     }
+
 
 }
